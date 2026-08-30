@@ -122,9 +122,7 @@
 
     <div id="espacio-animacion">
         <canvas id="canvasSorpresa"></canvas>
-    </div>
-
-    <script>
+    </div><script>
         const contenedorEstrellas = document.getElementById('grupo-estrellas');
         const esCelular = window.innerWidth < 768;
         const numEstrellas = esCelular ? 40 : 70;
@@ -180,20 +178,15 @@
             const canvas = document.getElementById('canvasSorpresa');
             const ctx = canvas.getContext('2d');
 
-            // CORRECCIÓN MAESTRA DE ALTA DEFINICIÓN (SOLUCIÓN RETINA DISPLAY)
-            // Multiplicamos la resolución interna del canvas por la densidad de la pantalla
             function ajustarCanvasAltaResolucion() {
                 const dpr = window.devicePixelRatio || 1;
                 canvas.width = window.innerWidth * dpr;
                 canvas.height = window.innerHeight * dpr;
-                // Escalamos el contexto para que los dibujos se mantengan del tamaño correcto pero en HD
                 ctx.scale(dpr, dpr);
             }
             ajustarCanvasAltaResolucion();
-            // Ajustamos si se rota la pantalla o cambia el tamaño
             window.addEventListener('resize', ajustarCanvasAltaResolucion);
 
-            // Estrellas estáticas de fondo en el canvas
             const estrellasFondoCanvas = [];
             const cantidadEstrellasCanvas = esCelular ? 45 : 85;
             for (let i = 0; i < cantidadEstrellasCanvas; i++) {
@@ -205,19 +198,17 @@
                 });
             }
 
-            // SECUENCIA DE TEXTO OPTIMIZADA Y REPARADA
             const secuencia = [
                 "Te amo",
                 "Mi niña",
                 "Preciosa",
-                ["Gracias", "por", "existir"], // Ahora aparece en 3 pisos ordenados verticalmente
+                ["Gracias", "por", "existir"], 
                 "CORAZON"
             ];
 
             let indicePaso = 0;
             let particulasTexto = [];
             let contadorFrames = 0;
-            // Aumenté la duración de cada paso para que el usuario pueda leer cómodamente
             const duracionPaso = 230; 
 
             class CorazonLluvia {
@@ -255,7 +246,6 @@
                             colisiona = true;
                         }
                     } else {
-                        // Ajusté el área de colisión para que coincida con el nuevo texto gigante y separado
                         if (this.y > centroY - 100 && this.y < centroY + 100 &&
                             this.x > centroX - limiteTextoAncho && this.x < centroX + limiteTextoAncho) {
                             colisiona = true;
@@ -296,7 +286,6 @@
                 }
             }
 
-            // Partículas de texto ROJO PURO e intenso
             class ParticulaTexto {
                 constructor() {
                     this.x = Math.random() * window.innerWidth;
@@ -305,9 +294,8 @@
                     this.destinoY = this.y;
                     const tonalidadesRojasPuras = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
                     this.color = tonalidadesRojasPuras[Math.floor(Math.random() * tonalidadesRojasPuras.length)];
-                    // Aumentamos el tamaño base para que las letras se sientan sólidas y densas
-                    this.tamano = Math.random() * 2.2 + 1.3;
-                    this.velocidad = 0.14; // Velocidad de unión suave
+                    this.tamano = esCelular ? (Math.random() * 1.5 + 1.1) : (Math.random() * 2.0 + 1.3);
+                    this.velocidad = 0.14; 
                 }
 
                 actualizar() {
@@ -337,7 +325,32 @@
 
                 offCtx.fillStyle = '#ffffff';
 
-                // FASE DE DIBUJADO EN TEXTO GIGANTE Y CLARO
                 if (Array.isArray(itemSecuencia)) {
-                    // FUENTE MUCHO MÁS GRANDE Y SEPARADA PARA FRASES LARGAS
-                    let fontSize = esCelular ? Math.min(w / 5.2, 4
+                    let fontSize = esCelular ? Math.min(w / 5.2, 44) : Math.min(w / 6.0, 64);
+                    offCtx.font = `bold ${fontSize}px sans-serif`;
+                    offCtx.textAlign = 'center';
+                    offCtx.textBaseline = 'middle';
+
+                    let lineHeight = fontSize * 1.3;
+                    let totalHeight = lineHeight * itemSecuencia.length;
+                    let startY = (h / 2) - (totalHeight / 2) + (lineHeight / 2);
+
+                    itemSecuencia.forEach((linea, index) => {
+                        offCtx.fillText(linea, w / 2, startY + (index * lineHeight));
+                    });
+                } else {
+                    let fontSize = esCelular ? (itemSecuencia.length > 8 ? Math.min(w / 4.6, 52) : Math.min(w / 3.8, 68)) : Math.min(w / 4.5, 95);
+                    offCtx.font = `bold ${fontSize}px sans-serif`;
+                    offCtx.textAlign = 'center';
+                    offCtx.textBaseline = 'middle';
+                    offCtx.fillText(itemSecuencia, w / 2, h / 2);
+                }
+
+                const imgData = offCtx.getImageData(0, 0, w, h);
+                const puntos = [];
+                const salto = esCelular ? 4 : 3; 
+
+                for (let y = 0; y < h; y += salto) {
+                    for (let x = 0; x < w; x += salto) {
+                        const index = (y * w + x) * 4;
+                        if (imgData.data[index + 3] > 128) {
