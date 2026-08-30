@@ -22,7 +22,6 @@
             z-index: 10;
         }
 
-        /* Botón mejorado, brillante y llamativo */
         #boton-inicio {
             padding: 18px 40px;
             font-size: 22px;
@@ -49,8 +48,8 @@
             letter-spacing: 1px;
         }
 
-        /* Pantalla principal con lluvia de flores diminutas */
-        #espacio-lluvia {
+        /* Pantalla principal con efecto gravedad cero y caída */
+        #espacio-efecto {
             display: none;
             position: absolute;
             top: 0;
@@ -61,82 +60,89 @@
             overflow: hidden;
         }
 
-        /* Estilo para las flores diminutas cayendo */
-        .flor-diminuta {
+        /* Estilo para las flores que flotan y caen */
+        .flor {
             position: absolute;
-            width: 15px; /* Tamaño diminuto */
-            height: 15px;
+            width: 18px;
+            height: 18px;
             background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png');
             background-size: contain;
             background-repeat: no-repeat;
-            opacity: 0.8;
-            animation: caidaLibre linear infinite;
+            opacity: 0.85;
+            animation: efectoGravedadYCaida linear infinite;
         }
 
-        @keyframes caidaLibre {
+        @keyframes efectoGravedadYCaida {
             0% {
-                transform: translateY(-20px) rotate(0deg);
+                transform: translate(0, 0) rotate(0deg);
+            }
+            30% {
+                /* Primero flotan libremente como en gravedad cero */
+                transform: translate(40px, -50px) rotate(90deg);
+            }
+            60% {
+                transform: translate(-30px, -20px) rotate(180deg);
             }
             100% {
-                transform: translateY(105vh) rotate(360deg);
+                /* Y luego empiezan a caer hacia abajo */
+                transform: translate(10px, 105vh) rotate(360deg);
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla inicial -->
+    <!-- Pantalla inicial con los 3 intentos del botón -->
     <div id="pantalla-inicio">
         <button id="boton-inicio">Presiona aquí ✨</button>
         <div id="texto-intentos">Toca para descubrir algo especial</div>
     </div>
 
-    <!-- Pantalla con fondo negro y lluvia de flores diminutas -->
-    <div id="espacio-lluvia"></div>
+    <!-- Pantalla con fondo negro y el efecto de flores -->
+    <div id="espacio-efecto"></div>
 
     <script>
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
-        const espacioLluvia = document.getElementById('espacio-lluvia');
+        const espacioEfecto = document.getElementById('espacio-efecto');
         const textoIntentos = document.getElementById('texto-intentos');
 
-        let intentos = 0; // Contador para los clics falsos
+        let intentos = 0;
 
         botonInicio.addEventListener('click', function() {
             intentos++;
 
             if (intentos === 1) {
-                // Primer intento: el botón "falla" y se mueve a otro lado
                 botonInicio.style.transform = 'translate(100px, -80px)';
                 textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
             } 
             else if (intentos === 2) {
-                // Segundo intento: se mueve hacia el otro lado y sigue sin abrir
                 botonInicio.style.transform = 'translate(-120px, 90px)';
                 textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
             } 
             else if (intentos >= 3) {
-                // Tercer intento: ¡Ahora sí funciona y entra!
                 pantallaInicio.style.display = 'none';
-                espacioLluvia.style.display = 'block';
-                iniciarLluviaDeFlores();
+                espacioEfecto.style.display = 'block';
+                iniciarEfectoFlores();
             }
         });
 
-        function iniciarLluviaDeFlores() {
-            const cantidad = 50; // ¡Bastantes flores diminutas cayendo!
+        function iniciarEfectoFlores() {
+            const cantidad = 60; // Bastantes flores en pantalla
             for (let i = 0; i < cantidad; i++) {
                 const flor = document.createElement('div');
-                flor.classList.add('flor-diminuta');
+                flor.classList.add('flor');
 
-                // Posición horizontal aleatoria
+                // Posición aleatoria en la pantalla
                 flor.style.left = Math.random() * 100 + 'vw';
-                
-                // Retraso y velocidad de caída variados para que se vea natural
-                flor.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Entre 2 y 5 segundos (rápido y fluido)
+                flor.style.top = (Math.random() * 50) + 'vh';
+
+                // Duración de la animación variada para que se vea natural
+                const duracion = Math.random() * 4 + 4; // Entre 4 y 8 segundos
+                flor.style.animationDuration = duracion + 's';
                 flor.style.animationDelay = (Math.random() * 5) + 's';
 
-                espacioLluvia.appendChild(flor);
+                espacioEfecto.appendChild(flor);
             }
         }
     </script>
