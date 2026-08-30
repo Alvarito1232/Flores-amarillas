@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sorpresa - 21 de Septiembre</title>
+    <title>Flores Amarillas - 21 de Septiembre</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -67,11 +67,11 @@
             overflow: hidden;
         }
 
-        /* Estilo de corazones multicolores hechos con CSS puro */
+        /* Estilo de corazones con colores bien combinados */
         .corazon {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             transform: rotate(45deg);
             animation: caidaLluvia linear infinite;
         }
@@ -80,33 +80,33 @@
         .corazon::after {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background-color: inherit;
         }
 
         .corazon::before {
-            top: -8px;
+            top: -9px;
             left: 0;
         }
 
         .corazon::after {
             top: 0;
-            left: -8px;
+            left: -9px;
         }
 
         @keyframes caidaLluvia {
             0% {
-                transform: translateY(-80px) rotate(45deg);
+                transform: translateY(-40px) rotate(45deg);
                 opacity: 0;
             }
-            15% {
+            10% {
                 opacity: 1;
             }
             100% {
                 transform: translateY(105vh) rotate(405deg);
-                opacity: 0.85;
+                opacity: 0.9;
             }
         }
     </style>
@@ -152,28 +152,27 @@
         });
 
         function iniciarLluviaDeCorazones() {
-            // Lista de colores vibrantes y bonitos (sin negro)
-            const colores = ['#FF1493', '#FF69B4', '#FF4500', '#FFD700', '#00FFFF', '#FF6347', '#DA70D6', '#00FF7F'];
-            const cantidad = 65; 
+            // Tonos románticos y elegantes que combinan perfectamente (Rojos, rosas, fucsias, dorados y blanco suave)
+            const colores = ['#FF1744', '#FF4081', '#E91E63', '#FF5252', '#FF80AB', '#FFD700', '#FFA000', '#FFFFFF'];
+            const cantidad = 70; 
 
             for (let i = 0; i < cantidad; i++) {
                 const corazon = document.createElement('div');
                 corazon.classList.add('corazon');
 
-                // Asignar un color aleatorio de la lista
-                const colorAleatorio = colores[Math.floor(Math.random() * colores.length)];
-                corazon.style.backgroundColor = colorAleatorio;
+                // Color aleatorio de la paleta armónica
+                corazon.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
 
-                // Posición horizontal totalmente aleatoria
+                // Posición horizontal aleatoria
                 corazon.style.left = Math.random() * 100 + 'vw';
                 
-                // Distribuidos a diferentes alturas por encima de la pantalla para evitar líneas
-                corazon.style.top = (Math.random() * -300 - 50) + 'px';
+                // Sin retrasos largos para que comiencen de inmediato
+                corazon.style.top = (Math.random() * -100 - 20) + 'px';
 
-                // Velocidad de caída fluida y natural tipo lluvia
-                const duracion = Math.random() * 3 + 2.5; // Entre 2.5 y 5.5 segundos
+                // Caída mucho más rápida y fluida
+                const duracion = Math.random() * 1.5 + 1.2; // Entre 1.2 y 2.7 segundos (más rápido)
                 corazon.style.animationDuration = duracion + 's';
-                corazon.style.animationDelay = (Math.random() * 5) + 's';
+                corazon.style.animationDelay = (Math.random() * 1.5) + 's';
 
                 espacioLluvia.appendChild(corazon);
             }
