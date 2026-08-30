@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Flores Amarillas - 21 de Septiembre</title>
+    <title>Sorpresa - 21 de Septiembre</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -55,7 +55,7 @@
             text-align: center;
         }
 
-        /* Pantalla de lluvia de flores */
+        /* Pantalla de lluvia de corazones */
         #espacio-lluvia {
             display: none;
             position: absolute;
@@ -67,50 +67,46 @@
             overflow: hidden;
         }
 
-        /* Flor de 5 pétalos hecha con código (Inspirada en tu foto) */
-        .flor {
+        /* Estilo de corazones multicolores hechos con CSS puro */
+        .corazon {
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #FFD700;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #FFD700;
+            width: 16px;
+            height: 16px;
+            transform: rotate(45deg);
             animation: caidaLluvia linear infinite;
         }
 
-        /* Pétalos distribuidos alrededor para formar la flor */
-        .flor::before, .flor::after {
+        .corazon::before,
+        .corazon::after {
             content: '';
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #FFD700;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
+            background-color: inherit;
         }
 
-        .flor::before {
-            top: -10px;
-            left: -5px;
-            box-shadow: 10px 0 0 #FFD700;
+        .corazon::before {
+            top: -8px;
+            left: 0;
         }
 
-        .flor::after {
-            top: 5px;
-            left: -10px;
-            box-shadow: 0 10px 0 #FFD700, 10px 10px 0 #FFD700;
+        .corazon::after {
+            top: 0;
+            left: -8px;
         }
 
         @keyframes caidaLluvia {
             0% {
-                transform: translateY(-50px) rotate(0deg);
+                transform: translateY(-80px) rotate(45deg);
                 opacity: 0;
             }
-            10% {
+            15% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(105vh) rotate(360deg);
-                opacity: 0.9;
+                transform: translateY(105vh) rotate(405deg);
+                opacity: 0.85;
             }
         }
     </style>
@@ -125,7 +121,7 @@
         </div>
     </div>
 
-    <!-- Pantalla con fondo negro y lluvia de flores -->
+    <!-- Pantalla con fondo negro y lluvia de corazones -->
     <div id="espacio-lluvia"></div>
 
     <script>
@@ -151,28 +147,35 @@
             else if (intentos >= 3) {
                 pantallaInicio.style.display = 'none';
                 espacioLluvia.style.display = 'block';
-                iniciarLluviaDeFlores();
+                iniciarLluviaDeCorazones();
             }
         });
 
-        function iniciarLluviaDeFlores() {
-            const cantidad = 70; // Cantidad de flores en la lluvia
+        function iniciarLluviaDeCorazones() {
+            // Lista de colores vibrantes y bonitos (sin negro)
+            const colores = ['#FF1493', '#FF69B4', '#FF4500', '#FFD700', '#00FFFF', '#FF6347', '#DA70D6', '#00FF7F'];
+            const cantidad = 65; 
+
             for (let i = 0; i < cantidad; i++) {
-                const flor = document.createElement('div');
-                flor.classList.add('flor');
+                const corazon = document.createElement('div');
+                corazon.classList.add('corazon');
 
-                // Posición horizontal aleatoria por toda la pantalla
-                flor.style.left = Math.random() * 100 + 'vw';
+                // Asignar un color aleatorio de la lista
+                const colorAleatorio = colores[Math.floor(Math.random() * colores.length)];
+                corazon.style.backgroundColor = colorAleatorio;
+
+                // Posición horizontal totalmente aleatoria
+                corazon.style.left = Math.random() * 100 + 'vw';
                 
-                // Empiezan arriba de la pantalla de forma escalonada para que no salgan en fila
-                flor.style.top = (Math.random() * -50) - 20 + 'px';
+                // Distribuidos a diferentes alturas por encima de la pantalla para evitar líneas
+                corazon.style.top = (Math.random() * -300 - 50) + 'px';
 
-                // Velocidad de caída fluida tipo lluvia
-                const duracion = Math.random() * 3 + 2; // Entre 2 y 5 segundos
-                flor.style.animationDuration = duracion + 's';
-                flor.style.animationDelay = (Math.random() * 5) + 's';
+                // Velocidad de caída fluida y natural tipo lluvia
+                const duracion = Math.random() * 3 + 2.5; // Entre 2.5 y 5.5 segundos
+                corazon.style.animationDuration = duracion + 's';
+                corazon.style.animationDelay = (Math.random() * 5) + 's';
 
-                espacioLluvia.appendChild(flor);
+                espacioLluvia.appendChild(corazon);
             }
         }
     </script>
