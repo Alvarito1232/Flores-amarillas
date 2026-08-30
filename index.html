@@ -19,6 +19,7 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
+            background: #000;
         }
 
         #grupo-interactivo {
@@ -67,6 +68,8 @@
 
         canvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -121,41 +124,41 @@
             ajustarCanvas();
             window.addEventListener('resize', ajustarCanvas);
 
-            // Textos y formas por los que pasará la secuencia de partículas
-            const pasos = [
-                { texto: "Te amo", tipo: "texto" },
-                { texto: "Mi niña", tipo: "texto" },
-                { texto: "Preciosa", tipo: "texto" },
-                { texto: "Gracias por existir", tipo: "texto" },
-                { tipo: "corazones" } // Secuencia final de corazones anidados
+            // Secuencia exacta de palabras y figura final
+            const secuencia = [
+                "Te amo",
+                "Mi niña",
+                "Preciosa",
+                "Gracias por existir",
+                "CORAZON" // Identificador para la figura final
             ];
 
-            let pasoActual = 0;
+            let indicePaso = 0;
             let particulas = [];
             let contadorFrames = 0;
-            const duracionPorPaso = 220; // Tiempo que dura cada frase en frames
+            const duracionPaso = 180; // Tiempo que se queda fija cada frase antes de cambiar
 
-            // Generar puntos de texto usando un canvas temporal
-            function obtenerPuntosTexto(str) {
-                const tempCanvas = document.createElement('canvas');
-                const tCtx = tempCanvas.getContext('2d');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
+            // Obtener coordenadas de píxeles para el texto
+            function obtenerPuntosTexto(texto) {
+                const offScreenCanvas = document.createElement('canvas');
+                const offCtx = offScreenCanvas.getContext('2d');
+                offScreenCanvas.width = canvas.width;
+                offScreenCanvas.height = canvas.height;
 
-                tCtx.fillStyle = 'white';
-                let fontSize = Math.min(canvas.width / 7, 90);
-                tCtx.font = `bold ${fontSize}px sans-serif`;
-                tCtx.textAlign = 'center';
-                tCtx.textBaseline = 'middle';
-                tCtx.fillText(str, tempCanvas.width / 2, tempCanvas.height / 2);
+                offCtx.fillStyle = '#ffffff';
+                let fontSize = Math.min(canvas.width / 6, 85);
+                offCtx.font = `bold ${fontSize}px sans-serif`;
+                offCtx.textAlign = 'center';
+                offCtx.textBaseline = 'middle';
+                offCtx.fillText(texto, offScreenCanvas.width / 2, offScreenCanvas.height / 2);
 
-                const imgData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                const imgData = offCtx.getImageData(0, 0, offScreenCanvas.width, offScreenCanvas.height);
                 const puntos = [];
-                const salto = 4; // Densidad de partículas
+                const salto = 5; // Salto para capturar los puntos de la letra
 
-                for (let y = 0; y < tempCanvas.height; y += salto) {
-                    for (let x = 0; x < tempCanvas.width; x += salto) {
-                        const index = (y * tempCanvas.width + x) * 4;
+                for (let y = 0; y < offScreenCanvas.height; y += salto) {
+                    for (let x = 0; x < offScreenCanvas.width; x += salto) {
+                        const index = (y * offScreenCanvas.width + x) * 4;
                         if (imgData.data[index + 3] > 128) {
                             puntos.push({ x: x, y: y });
                         }
@@ -164,102 +167,91 @@
                 return puntos;
             }
 
-            // Generar puntos para la figura de corazones anidados del centro
-            function obtenerPuntosCorazones() {
+            // Obtener coordenadas para los corazones anidados del centro
+            function obtenerPuntosCorazon() {
                 const puntos = [];
                 const cx = canvas.width / 2;
                 const cy = canvas.height / 2;
-                
-                // Múltiples capas de corazones
-                [70, 130, 190].forEach(escala => {
-                    for (let t = 0; t < Math.PI * 2; t += 0.05) {
-                        // Ecuación paramétrica del corazón
+
+                [60, 110, 160, 210].forEach(escala => {
+                    for (let t = 0; t < Math.PI * 2; t += 0.08) {
                         let hx = 16 * Math.pow(Math.sin(t), 3);
                         let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                        
                         puntos.push({
-                            x: cx + hx * (escala / 16),
-                            y: cy + hy * (escala / 16)
+                            x: cx + hx * (escala / 15),
+                            y: cy + hy * (escala / 15)
                         });
                     }
                 });
                 return puntos;
             }
 
-            // Inicializar partículas flotando al azar
             class Particula {
                 constructor() {
                     this.x = Math.random() * canvas.width;
                     this.y = Math.random() * canvas.height;
                     this.destinoX = this.x;
                     this.destinoY = this.y;
-                    this.vx = (Math.random() - 0.5) * 2;
-                    this.vy = (Math.random() - 0.5) * 2;
-                    this.color = Math.random() < 0.2 ? '#ffffff' : '#FF1744';
-                    this.tamano = Math.random() * 2 + 1.5;
+                    this.color = Math.random() < 0.15 ? '#ffffff' : '#ff1744';
+                    this.tamano = Math.random() * 2 + 1.2;
+                    this.velocidad = 0.07; // Velocidad de atracción hacia el objetivo
                 }
 
                 actualizar() {
-                    // Moverse hacia el objetivo de la palabra o figura
                     let dx = this.destinoX - this.x;
                     let dy = this.destinoY - this.y;
-                    this.x += dx * 0.08;
-                    this.y += dy * 0.08;
-
-                    // Si estamos flotando libremente al inicio o transición
-                    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
-                        this.x += this.vx;
-                        this.y += this.vy;
-                    }
+                    this.x += dx * this.velocidad;
+                    this.y += dy * this.velocidad;
                 }
 
                 dibujar() {
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 8;
-                    ctx.shadowColor = '#FF4081';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = '#ff4081';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tamano, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
 
-            // Crear grupo de partículas
-            const totalParticulas = 1200;
+            // Crear las partículas (ej. 1400 partículas para alta definición)
+            const totalParticulas = 1400;
             for (let i = 0; i < totalParticulas; i++) {
                 particulas.push(new Particula());
             }
 
-            function cambiarObjetivo() {
+            function actualizarDestinos() {
+                let actual = secuencia[indicePaso];
                 let puntosObjetivo = [];
-                if (pasos[pasoActual].tipo === "texto") {
-                    puntosObjetivo = obtenerPuntosTexto(pasos[pasoActual].texto);
+
+                if (actual === "CORAZON") {
+                    puntosObjetivo = obtenerPuntosCorazon();
                 } else {
-                    puntosObjetivo = obtenerPuntosCorazones();
+                    puntosObjetivo = obtenerPuntosTexto(actual);
                 }
 
-                // Asignar los puntos a las partículas de forma fluida
+                // Si no hay suficientes puntos de texto, replicamos algunos para cubrir todas las partículas
                 for (let i = 0; i < particulas.length; i++) {
-                    let punto = puntosObjetivo[i % puntosObjetivo.length];
-                    if (punto) {
-                        // Agregar ligera dispersión aleatoria alrededor de la letra/figura
-                        particulas[i].destinoX = punto + (Math.random() - 0.5) * 6;
-                        particulas[i].destinoY = punto.y + (Math.random() - 0.5) * 6;
+                    if (puntosObjetivo.length > 0) {
+                        let pt = puntosObjetivo[i % puntosObjetivo.length];
+                        particulas[i].destinoX = pt.x + (Math.random() - 0.5) * 4;
+                        particulas[i].destinoY = pt.y + (Math.random() - 0.5) * 4;
                     }
                 }
             }
 
-            cambiarObjetivo();
+            actualizarDestinos();
 
-            // Bucle principal de animación
             function animar() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'; // Estela suave estilo galaxia
+                // Borrar pantalla con un negro semi-transparente para dejar estela suave
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 contadorFrames++;
-                if (contadorFrames > duracionPorPaso) {
+                if (contadorFrames > duracionPaso) {
                     contadorFrames = 0;
-                    pasoActual = (pasoActual + 1) % pasos.length;
-                    cambiarObjetivo();
+                    indicePaso = (indicePaso + 1) % secuencia.length;
+                    actualizarDestinos();
                 }
 
                 for (let p of particulas) {
