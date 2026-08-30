@@ -180,15 +180,20 @@
             const canvas = document.getElementById('canvasSorpresa');
             const ctx = canvas.getContext('2d');
 
-            function ajustarCanvas() {
+            // CORRECCIÓN MAESTRA DE ALTA DEFINICIÓN (SOLUCIÓN RETINA DISPLAY)
+            // Multiplicamos la resolución interna del canvas por la densidad de la pantalla
+            function ajustarCanvasAltaResolucion() {
                 const dpr = window.devicePixelRatio || 1;
                 canvas.width = window.innerWidth * dpr;
                 canvas.height = window.innerHeight * dpr;
+                // Escalamos el contexto para que los dibujos se mantengan del tamaño correcto pero en HD
                 ctx.scale(dpr, dpr);
             }
-            ajustarCanvas();
-            window.addEventListener('resize', ajustarCanvas);
+            ajustarCanvasAltaResolucion();
+            // Ajustamos si se rota la pantalla o cambia el tamaño
+            window.addEventListener('resize', ajustarCanvasAltaResolucion);
 
+            // Estrellas estáticas de fondo en el canvas
             const estrellasFondoCanvas = [];
             const cantidadEstrellasCanvas = esCelular ? 45 : 85;
             for (let i = 0; i < cantidadEstrellasCanvas; i++) {
@@ -200,18 +205,20 @@
                 });
             }
 
+            // SECUENCIA DE TEXTO OPTIMIZADA Y REPARADA
             const secuencia = [
                 "Te amo",
                 "Mi niña",
                 "Preciosa",
-                ["Gracias", "por", "existir"], 
+                ["Gracias", "por", "existir"], // Ahora aparece en 3 pisos ordenados verticalmente
                 "CORAZON"
             ];
 
             let indicePaso = 0;
             let particulasTexto = [];
             let contadorFrames = 0;
-            const duracionPaso = 210; 
+            // Aumenté la duración de cada paso para que el usuario pueda leer cómodamente
+            const duracionPaso = 230; 
 
             class CorazonLluvia {
                 constructor() {
@@ -238,17 +245,18 @@
                     let centroX = window.innerWidth / 2;
                     let centroY = window.innerHeight / 2;
                     let colisiona = false;
-                    let limiteTextoAncho = esCelular ? 150 : 220;
+                    let limiteTextoAncho = esCelular ? 160 : 220;
 
                     if (esCorazonActivo) {
                         let dx = this.x - centroX;
                         let dy = this.y - centroY;
                         let distancia = Math.sqrt(dx * dx + dy * dy);
-                        if (distancia < (esCelular ? 120 : 160)) {
+                        if (distancia < (esCelular ? 130 : 180)) {
                             colisiona = true;
                         }
                     } else {
-                        if (this.y > centroY - 110 && this.y < centroY + 110 &&
+                        // Ajusté el área de colisión para que coincida con el nuevo texto gigante y separado
+                        if (this.y > centroY - 100 && this.y < centroY + 100 &&
                             this.x > centroX - limiteTextoAncho && this.x < centroX + limiteTextoAncho) {
                             colisiona = true;
                         }
@@ -288,6 +296,7 @@
                 }
             }
 
+            // Partículas de texto ROJO PURO e intenso
             class ParticulaTexto {
                 constructor() {
                     this.x = Math.random() * window.innerWidth;
@@ -296,8 +305,9 @@
                     this.destinoY = this.y;
                     const tonalidadesRojasPuras = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
                     this.color = tonalidadesRojasPuras[Math.floor(Math.random() * tonalidadesRojasPuras.length)];
-                    this.tamano = Math.random() * 1.8 + 1.1;
-                    this.velocidad = 0.12; 
+                    // Aumentamos el tamaño base para que las letras se sientan sólidas y densas
+                    this.tamano = Math.random() * 2.2 + 1.3;
+                    this.velocidad = 0.14; // Velocidad de unión suave
                 }
 
                 actualizar() {
@@ -327,135 +337,7 @@
 
                 offCtx.fillStyle = '#ffffff';
 
+                // FASE DE DIBUJADO EN TEXTO GIGANTE Y CLARO
                 if (Array.isArray(itemSecuencia)) {
-                    let fontSize = esCelular ? Math.min(w / 5.5, 38) : Math.min(w / 6.0, 58);
-                    offCtx.font = `bold ${fontSize}px sans-serif`;
-                    offCtx.textAlign = 'center';
-                    offCtx.textBaseline = 'middle';
-
-                    let lineHeight = fontSize * 1.35;
-                    let totalHeight = lineHeight * itemSecuencia.length;
-                    let startY = (h / 2) - (totalHeight / 2) + (lineHeight / 2);
-
-                    itemSecuencia.forEach((linea, index) => {
-                        offCtx.fillText(linea, w / 2, startY + (index * lineHeight));
-                    });
-                } else {
-                    let fontSize = esCelular ? (itemSecuencia.length > 8 ? Math.min(w / 5.0, 44) : Math.min(w / 4.2, 56)) : Math.min(w / 4.8, 85);
-                    offCtx.font = `bold ${fontSize}px sans-serif`;
-                    offCtx.textAlign = 'center';
-                    offCtx.textBaseline = 'middle';
-                    offCtx.fillText(itemSecuencia, w / 2, h / 2);
-                }
-
-                const imgData = offCtx.getImageData(0, 0, w, h);
-                const puntos = [];
-                const salto = esCelular ? 5 : 4;
-
-                for (let y = 0; y < h; y += salto) {
-                    for (let x = 0; x < w; x += salto) {
-                        const index = (y * w + x) * 4;
-                        if (imgData.data[index + 3] > 128) {
-                            puntos.push({ x: x, y: y });
-                        }
-                    }
-                }
-                return puntos;
-            }
-
-            function obtenerPuntosCorazon() {
-                const puntos = [];
-                const cx = window.innerWidth / 2;
-                const cy = window.innerHeight / 2;
-                
-                let factorEscala = Math.min(window.innerWidth, window.innerHeight) / (esCelular ? 800 : 700);
-
-                [60, 110, 160, 210].forEach(escala => {
-                    let escalaReal = escala * factorEscala;
-                    for (let t = 0; t < Math.PI * 2; t += 0.07) {
-                        let hx = 16 * Math.pow(Math.sin(t), 3);
-                        let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                        puntos.push({
-                            x: cx + hx * (escalaReal / 15),
-                            y: cy + hy * (escalaReal / 15)
-                        });
-                    }
-                });
-                return puntos;
-            }
-
-            const totalParticulas = esCelular ? 850 : 1500;
-            for (let i = 0; i < totalParticulas; i++) {
-                particulasTexto.push(new ParticulaTexto());
-            }
-
-            const totalCorazonesLluvia = esCelular ? 65 : 110;
-            let lluvia = [];
-            for (let i = 0; i < totalCorazonesLluvia; i++) {
-                lluvia.push(new CorazonLluvia());
-            }
-
-            function actualizarDestinos(esDispersar) {
-                if (esDispersar) {
-                    for (let p of particulasTexto) {
-                        p.destinoX = Math.random() * window.innerWidth;
-                        p.destinoY = Math.random() * window.innerHeight;
-                    }
-                } else {
-                    let actual = secuencia[indicePaso];
-                    let puntosObjetivo = (actual === "CORAZON") ? obtenerPuntosCorazon() : obtenerPuntosTexto(actual);
-
-                    for (let i = 0; i < particulasTexto.length; i++) {
-                        if (puntosObjetivo.length > 0) {
-                            let pt = puntosObjetivo[i % puntosObjetivo.length];
-                            particulasTexto[i].destinoX = pt.x + (Math.random() - 0.5) * 2;
-                            particulasTexto[i].destinoY = pt.y + (Math.random() - 0.5) * 2;
-                        }
-                    }
-                }
-            }
-
-            actualizarDestinos(false);
-
-            function animar() {
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-
-                for (let est of estrellasFondoCanvas) {
-                    ctx.fillStyle = `rgba(255, 255, 255, ${est.alfa})`;
-                    ctx.fillRect(est.x, est.y, est.tamano, est.tamano);
-                }
-
-                contadorFrames++;
-
-                if (contadorFrames === duracionPaso - 40) {
-                    actualizarDestinos(true);
-                }
-
-                if (contadorFrames > duracionPaso) {
-                    contadorFrames = 0;
-                    indicePaso = (indicePaso + 1) % secuencia.length;
-                    actualizarDestinos(false);
-                }
-
-                let esCorazonActivo = (secuencia[indicePaso] === "CORAZON");
-
-                for (let c of lluvia) {
-                    c.actualizar(esCorazonActivo);
-                    c.dibujar();
-                }
-
-                for (let p of particulasTexto) {
-                    p.actualizar();
-                    p.dibujar();
-                }
-
-                requestAnimationFrame(animar);
-            }
-
-            animar();
-        }
-    </script>
-
-</body>
-</html>
+                    // FUENTE MUCHO MÁS GRANDE Y SEPARADA PARA FRASES LARGAS
+                    let fontSize = esCelular ? Math.min(w / 5.2, 4
