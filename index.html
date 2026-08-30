@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sorpresa Romántica Definitiva</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        /* Pantalla de inicio con temática de espacio exterior, estrellas y fugaces */
+        /* Pantalla de inicio con espacio exterior, estrellas y fugaces */
         #pantalla-inicio {
             position: absolute;
             top: 0;
@@ -21,9 +21,9 @@
             z-index: 10;
             background: radial-gradient(circle at center, #1a001a 0%, #000000 100%);
             overflow: hidden;
+            padding: 20px;
         }
 
-        /* Estrellas estáticas del fondo de inicio */
         .estrella-espacio {
             position: absolute;
             background: #ffffff;
@@ -36,7 +36,6 @@
             100% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Estrellas fugaces */
         .estrella-fugaz {
             position: absolute;
             height: 2px;
@@ -47,8 +46,8 @@
         }
 
         @keyframes disparoFugaz {
-            0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; width: 100px; }
-            100% { transform: translateX(-600px) translateY(600px) rotate(-45deg); opacity: 0; width: 10px; }
+            0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; width: 80px; }
+            100% { transform: translateX(-400px) translateY(400px) rotate(-45deg); opacity: 0; width: 10px; }
         }
 
         #grupo-interactivo {
@@ -57,38 +56,43 @@
             align-items: center;
             transition: transform 0.3s ease;
             z-index: 5;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
         }
 
-        /* Botón rojo elegante y llamativo */
         #boton-inicio {
-            padding: 18px 45px;
-            font-size: 22px;
+            width: 100%;
+            max-width: 280px;
+            padding: 16px 20px;
+            font-size: 20px;
             background: linear-gradient(135deg, #FF1744, #D50000);
             color: #ffffff;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 40px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 0 30px rgba(255, 23, 68, 0.8);
+            box-shadow: 0 0 25px rgba(255, 23, 68, 0.8);
             transition: all 0.3s ease;
             text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            white-space: nowrap;
         }
 
         #boton-inicio:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 45px rgba(255, 23, 68, 1);
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(255, 23, 68, 1);
         }
 
         #texto-intentos {
-            margin-top: 22px;
+            margin-top: 20px;
             color: #ff80ab;
-            font-size: 16px;
-            letter-spacing: 1px;
+            font-size: 15px;
+            letter-spacing: 0.5px;
             text-align: center;
             text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+            padding: 0 10px;
         }
 
-        /* Pantalla de animación con fondo negro absoluto para celulares y laptops */
         #espacio-animacion {
             display: none;
             position: absolute;
@@ -108,9 +112,8 @@
 </head>
 <body>
 
-    <div id="pantalla-inicio" id="contenedor-espacio">
+    <div id="pantalla-inicio">
         <div id="grupo-estrellas"></div>
-        
         <div id="grupo-interactivo">
             <button id="boton-inicio">Presiona aquí ✨</button>
             <div id="texto-intentos">Toca para descubrir algo especial</div>
@@ -122,12 +125,14 @@
     </div>
 
     <script>
-        // Crear estrellas y estrellas fugaces en la pantalla de inicio para celulares y laptops
         const contenedorEstrellas = document.getElementById('grupo-estrellas');
-        for (let i = 0; i < 70; i++) {
+        const esCelular = window.innerWidth < 768;
+        const numEstrellas = esCelular ? 40 : 70;
+
+        for (let i = 0; i < numEstrellas; i++) {
             let star = document.createElement('div');
             star.className = 'estrella-espacio';
-            let size = Math.random() * 3 + 1;
+            let size = Math.random() * 2.5 + 1;
             star.style.width = size + 'px';
             star.style.height = size + 'px';
             star.style.top = Math.random() * 100 + 'vh';
@@ -136,12 +141,12 @@
             contenedorEstrellas.appendChild(star);
         }
 
-        for (let j = 0; j < 3; j++) {
+        for (let j = 0; j < 2; j++) {
             let fugaz = document.createElement('div');
             fugaz.className = 'estrella-fugaz';
-            fugaz.style.top = (Math.random() * 50) + 'vh';
-            fugaz.style.left = (Math.random() * 50 + 50) + 'vw';
-            fugaz.style.animationDelay = (j * 2.5 + Math.random()) + 's';
+            fugaz.style.top = (Math.random() * 40) + 'vh';
+            fugaz.style.left = (Math.random() * 40 + 60) + 'vw';
+            fugaz.style.animationDelay = (j * 3 + Math.random()) + 's';
             contenedorEstrellas.appendChild(fugaz);
         }
 
@@ -157,11 +162,11 @@
             intentos++;
 
             if (intentos === 1) {
-                grupoInteractivo.style.transform = 'translate(110px, -70px)';
+                grupoInteractivo.style.transform = 'translate(80px, -60px)';
                 textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
             } 
             else if (intentos === 2) {
-                grupoInteractivo.style.transform = 'translate(-110px, 80px)';
+                grupoInteractivo.style.transform = 'translate(-80px, 70px)';
                 textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
             } 
             else if (intentos >= 3) {
@@ -175,9 +180,12 @@
             const canvas = document.getElementById('canvasSorpresa');
             const ctx = canvas.getContext('2d');
 
+            // Corrección de alta definición para que las letras no se vean pixeladas en cel ni PC
             function ajustarCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                ctx.scale(dpr, dpr);
             }
             ajustarCanvas();
             window.addEventListener('resize', ajustarCanvas);
@@ -195,19 +203,18 @@
             let contadorFrames = 0;
             const duracionPaso = 180; 
 
-            // Lluvia de corazones rápida y fluida
             class CorazonLluvia {
                 constructor() {
                     this.reiniciar();
                 }
 
                 reiniciar() {
-                    this.x = Math.random() * canvas.width;
+                    this.x = Math.random() * window.innerWidth;
                     this.y = -30 - Math.random() * 150;
-                    this.vy = Math.random() * 4 + 3; 
-                    this.vx = (Math.random() - 0.5) * 2;
-                    this.tamano = Math.random() * 7 + 5;
-                    const colores = ['#FF1744', '#FF4081', '#FF5252', '#FF80AB', '#FFD700', '#FFFFFF', '#00E676'];
+                    this.vy = Math.random() * 3.5 + 2.5; 
+                    this.vx = (Math.random() - 0.5) * 1.5;
+                    this.tamano = Math.random() * 6 + 4;
+                    const colores = ['#FF0000', '#FF1744', '#FF4081', '#FFD700', '#FFFFFF', '#00E676'];
                     this.color = colores[Math.floor(Math.random() * colores.length)];
                     this.rotacion = Math.random() * Math.PI;
                     this.vRot = (Math.random() - 0.5) * 0.1;
@@ -218,36 +225,37 @@
                     this.x += this.vx;
                     this.rotacion += this.vRot;
 
-                    let centroX = canvas.width / 2;
-                    let centroY = canvas.height / 2;
+                    let centroX = window.innerWidth / 2;
+                    let centroY = window.innerHeight / 2;
                     let colisiona = false;
+                    let limiteTextoAncho = esCelular ? 160 : 240;
 
                     if (esCorazonActivo) {
                         let dx = this.x - centroX;
                         let dy = this.y - centroY;
                         let distancia = Math.sqrt(dx * dx + dy * dy);
-                        if (distancia < 150) {
+                        if (distancia < (esCelular ? 120 : 160)) {
                             colisiona = true;
                         }
                     } else {
                         if (this.y > centroY - 45 && this.y < centroY + 45 &&
-                            this.x > centroX - 220 && this.x < centroX + 220) {
+                            this.x > centroX - limiteTextoAncho && this.x < centroX + limiteTextoAncho) {
                             colisiona = true;
                         }
                     }
 
                     if (colisiona) {
                         if (this.x < centroX) {
-                            this.vx = -5;
-                            this.x -= 6;
+                            this.vx = -4;
+                            this.x -= 5;
                         } else {
-                            this.vx = 5;
-                            this.x += 6;
+                            this.vx = 4;
+                            this.x += 5;
                         }
                         this.y -= 2;
                     }
 
-                    if (this.y > canvas.height + 30 || this.x < -50 || this.x > canvas.width + 50) {
+                    if (this.y > window.innerHeight + 30 || this.x < -50 || this.x > window.innerWidth + 50) {
                         this.reiniciar();
                     }
                 }
@@ -257,7 +265,7 @@
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.rotacion);
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 10;
+                    ctx.shadowBlur = 8;
                     ctx.shadowColor = this.color;
 
                     ctx.beginPath();
@@ -270,18 +278,17 @@
                 }
             }
 
-            // Partículas de las palabras con tonos más rojitos y brillantes
+            // Partículas de texto en ROJO PURO y nítido
             class ParticulaTexto {
                 constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
+                    this.x = Math.random() * window.innerWidth;
+                    this.y = Math.random() * window.innerHeight;
                     this.destinoX = this.x;
                     this.destinoY = this.y;
-                    // Mayor predominancia de rojos intensos y fucsias brillantes
-                    const tonalidadesRojas = ['#FF1744', '#FF2A55', '#D50000', '#FF4081', '#FF5252', '#FFFFFF'];
-                    this.color = tonalidadesRojas[Math.floor(Math.random() * tonalidadesRojas.length)];
+                    // Rojo puro predominante y un toque de blanco para brillo nítido
+                    this.color = Math.random() < 0.15 ? '#FFFFFF' : '#FF0000';
                     this.tamano = Math.random() * 2.2 + 1.2;
-                    this.velocidad = 0.12; 
+                    this.velocidad = 0.14; 
                 }
 
                 actualizar() {
@@ -293,8 +300,8 @@
 
                 dibujar() {
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#FF1744';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = '#FF0000';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tamano, 0, Math.PI * 2);
                     ctx.fill();
@@ -304,24 +311,25 @@
             function obtenerPuntosTexto(texto) {
                 const offScreenCanvas = document.createElement('canvas');
                 const offCtx = offScreenCanvas.getContext('2d');
-                offScreenCanvas.width = canvas.width;
-                offScreenCanvas.height = canvas.height;
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                offScreenCanvas.width = w;
+                offScreenCanvas.height = h;
 
                 offCtx.fillStyle = '#ffffff';
-                // Adaptación responsiva de fuente para celular y laptop
-                let fontSize = Math.min(canvas.width / 5.5, 80);
+                let fontSize = esCelular ? Math.min(w / 5.0, 52) : Math.min(w / 5.5, 75);
                 offCtx.font = `bold ${fontSize}px sans-serif`;
                 offCtx.textAlign = 'center';
                 offCtx.textBaseline = 'middle';
-                offCtx.fillText(texto, offScreenCanvas.width / 2, offScreenCanvas.height / 2);
+                offCtx.fillText(texto, w / 2, h / 2);
 
-                const imgData = offCtx.getImageData(0, 0, offScreenCanvas.width, offScreenCanvas.height);
+                const imgData = offCtx.getImageData(0, 0, w, h);
                 const puntos = [];
-                const salto = 5;
+                const salto = esCelular ? 3 : 4; // Muestreo más denso para que las letras queden perfectas
 
-                for (let y = 0; y < offScreenCanvas.height; y += salto) {
-                    for (let x = 0; x < offScreenCanvas.width; x += salto) {
-                        const index = (y * offScreenCanvas.width + x) * 4;
+                for (let y = 0; y < h; y += salto) {
+                    for (let x = 0; x < w; x += salto) {
+                        const index = (y * w + x) * 4;
                         if (imgData.data[index + 3] > 128) {
                             puntos.push({ x: x, y: y });
                         }
@@ -332,15 +340,14 @@
 
             function obtenerPuntosCorazon() {
                 const puntos = [];
-                const cx = canvas.width / 2;
-                const cy = canvas.height / 2;
+                const cx = window.innerWidth / 2;
+                const cy = window.innerHeight / 2;
                 
-                // Escala adaptable para celulares y laptops
-                let factorEscala = Math.min(canvas.width, canvas.height) / 750;
+                let factorEscala = Math.min(window.innerWidth, window.innerHeight) / (esCelular ? 900 : 750);
 
                 [60, 110, 160, 210].forEach(escala => {
                     let escalaReal = escala * factorEscala;
-                    for (let t = 0; t < Math.PI * 2; t += 0.08) {
+                    for (let t = 0; t < Math.PI * 2; t += 0.07) {
                         let hx = 16 * Math.pow(Math.sin(t), 3);
                         let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
                         puntos.push({
@@ -352,12 +359,12 @@
                 return puntos;
             }
 
-            const totalParticulas = 1400;
+            const totalParticulas = esCelular ? 1100 : 1600;
             for (let i = 0; i < totalParticulas; i++) {
                 particulasTexto.push(new ParticulaTexto());
             }
 
-            const totalCorazonesLluvia = 70;
+            const totalCorazonesLluvia = esCelular ? 35 : 65;
             let lluvia = [];
             for (let i = 0; i < totalCorazonesLluvia; i++) {
                 lluvia.push(new CorazonLluvia());
@@ -370,8 +377,8 @@
                 for (let i = 0; i < particulasTexto.length; i++) {
                     if (puntosObjetivo.length > 0) {
                         let pt = puntosObjetivo[i % puntosObjetivo.length];
-                        particulasTexto[i].destinoX = pt.x + (Math.random() - 0.5) * 4;
-                        particulasTexto[i].destinoY = pt.y + (Math.random() - 0.5) * 4;
+                        particulasTexto[i].destinoX = pt.x + (Math.random() - 0.5) * 3;
+                        particulasTexto[i].destinoY = pt.y + (Math.random() - 0.5) * 3;
                     }
                 }
             }
@@ -379,9 +386,8 @@
             actualizarDestinos();
 
             function animar() {
-                // Fondo 100% negro puro limpio
                 ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
                 contadorFrames++;
                 if (contadorFrames > duracionPaso) {
