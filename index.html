@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sorpresa Definitiva - 21 de Septiembre</title>
+    <title>Sorpresa Romántica Definitiva</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -55,7 +55,7 @@
             text-align: center;
         }
 
-        /* Pantalla de la animación principal */
+        /* Pantalla de animación de partículas con fondo negro */
         #espacio-animacion {
             display: none;
             position: absolute;
@@ -124,7 +124,6 @@
             ajustarCanvas();
             window.addEventListener('resize', ajustarCanvas);
 
-            // Secuencia de textos y figura final
             const secuencia = [
                 "Te amo",
                 "Mi niña",
@@ -136,9 +135,9 @@
             let indicePaso = 0;
             let particulasTexto = [];
             let contadorFrames = 0;
-            const duracionPaso = 200; // Duración de cada frase en frames
+            const duracionPaso = 210; // Tiempo fluido para cada frase
 
-            // Lluvia de corazones de colores que caen y chocan con el texto
+            // Lluvia de corazones más rápida y abundante
             class CorazonLluvia {
                 constructor() {
                     this.reiniciar();
@@ -146,42 +145,53 @@
 
                 reiniciar() {
                     this.x = Math.random() * canvas.width;
-                    this.y = -20 - Math.random() * 100;
-                    this.vy = Math.random() * 2 + 1.5; // Velocidad de caída
-                    this.vx = (Math.random() - 0.5) * 1.5;
-                    this.tamano = Math.random() * 8 + 8;
+                    this.y = -30 - Math.random() * 200;
+                    this.vy = Math.random() * 3.5 + 2.5; // Caída más rápida tipo lluvia intensa
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.tamano = Math.random() * 7 + 6;
                     const colores = ['#FF1744', '#FF4081', '#FF5252', '#FF80AB', '#FFD700', '#FFFFFF', '#00E676'];
                     this.color = colores[Math.floor(Math.random() * colores.length)];
                     this.rotacion = Math.random() * Math.PI;
-                    this.vRot = (Math.random() - 0.5) * 0.05;
+                    this.vRot = (Math.random() - 0.5) * 0.08;
                 }
 
-                actualizar(mapaTexto) {
+                actualizar(esCorazonActivo) {
                     this.y += this.vy;
                     this.x += this.vx;
                     this.rotacion += this.vRot;
 
-                    // Colisión física básica con las coordenadas activas del texto
-                    // Si el corazón se acerca a la zona central donde está el texto, rebota hacia un costado
                     let centroX = canvas.width / 2;
                     let centroY = canvas.height / 2;
 
-                    // Rango de la caja de texto
-                    if (this.y > centroY - 50 && this.y < centroY + 50 &&
-                        this.x > centroX - 180 && this.x < centroX + 180) {
-                        // Empujar hacia los lados según su posición relativa
-                        if (this.x < centroX) {
-                            this.vx = -3.5; // Rebota hacia la izquierda
-                            this.x -= 4;
-                        } else {
-                            this.vx = 3.5;  // Rebota hacia la derecha
-                            this.x += 4;
+                    // Detección de colisión inteligente según el paso actual
+                    let colisiona = false;
+                    if (esCorazonActivo) {
+                        // Colisión para la forma de los corazones anidados (área más amplia)
+                        let dx = Math.abs(this.x - centroX);
+                        let dy = Math.abs(this.y - centroY);
+                        if (dx < 170 && dy < 170) colisiona = true;
+                    } else {
+                        // Colisión para las palabras horizontales
+                        if (this.y > centroY - 45 && this.y < centroY + 45 &&
+                            this.x > centroX - 200 && this.x < centroX + 200) {
+                            colisiona = true;
                         }
-                        this.y -= 2; // Evitar que penetre
                     }
 
-                    // Si sale de la pantalla, reciclar arriba
-                    if (this.y > canvas.height + 30 || this.x < -50 || this.x > canvas.width + 50) {
+                    if (colisiona) {
+                        // Rebote dinámico hacia los costados para no atravesar el texto/figura
+                        if (this.x < centroX) {
+                            this.vx = -4.5;
+                            this.x -= 5;
+                        } else {
+                            this.vx = 4.5;
+                            this.x += 5;
+                        }
+                        this.y -= 1;
+                    }
+
+                    // Reciclar si sale de la pantalla
+                    if (this.y > canvas.height + 40 || this.x < -60 || this.x > canvas.width + 60) {
                         this.reiniciar();
                     }
                 }
@@ -194,7 +204,6 @@
                     ctx.shadowBlur = 8;
                     ctx.shadowColor = this.color;
 
-                    // Dibujar formita de corazón con canvas
                     ctx.beginPath();
                     let t = this.tamano;
                     ctx.moveTo(0, t / 4);
@@ -205,7 +214,7 @@
                 }
             }
 
-            // Partículas que forman las palabras y corazones centrales
+            // Partículas de las palabras y corazones centrales
             class ParticulaTexto {
                 constructor() {
                     this.x = Math.random() * canvas.width;
@@ -214,7 +223,7 @@
                     this.destinoY = this.y;
                     this.color = Math.random() < 0.2 ? '#ffffff' : '#ff1744';
                     this.tamano = Math.random() * 2 + 1.2;
-                    this.velocidad = 0.08;
+                    this.velocidad = 0.09; // Movimiento fluido hacia la posición
                 }
 
                 actualizar() {
@@ -226,15 +235,14 @@
 
                 dibujar() {
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 6;
-                    ctx.shadowColor = '#ff4081';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = '#ff1744';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tamano, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
 
-            // Obtener puntos del texto
             function obtenerPuntosTexto(texto) {
                 const offScreenCanvas = document.createElement('canvas');
                 const offCtx = offScreenCanvas.getContext('2d');
@@ -263,7 +271,6 @@
                 return puntos;
             }
 
-            // Obtener puntos de los corazones anidados
             function obtenerPuntosCorazon() {
                 const puntos = [];
                 const cx = canvas.width / 2;
@@ -282,13 +289,13 @@
                 return puntos;
             }
 
-            // Inicializar elementos
             const totalParticulas = 1400;
             for (let i = 0; i < totalParticulas; i++) {
                 particulasTexto.push(new ParticulaTexto());
             }
 
-            const totalCorazonesLluvia = 45;
+            // Aumentamos la cantidad de corazones en la lluvia para que se vea más lleno y rápido
+            const totalCorazonesLluvia = 65;
             let lluvia = [];
             for (let i = 0; i < totalCorazonesLluvia; i++) {
                 lluvia.push(new CorazonLluvia());
@@ -310,8 +317,8 @@
             actualizarDestinos();
 
             function animar() {
-                // Fondo negro puro con estela sutil
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                // Fondo totalmente negro y limpio con estela ligera
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 contadorFrames++;
@@ -321,13 +328,15 @@
                     actualizarDestinos();
                 }
 
-                // Dibujar y actualizar lluvia de corazones que chocan con las palabras
+                let esCorazonActivo = (secuencia[indicePaso] === "CORAZON");
+
+                // Actualizar y dibujar lluvia de corazones rápida con colisión corregida
                 for (let c of lluvia) {
-                    c.actualizar();
+                    c.actualizar(esCorazonActivo);
                     c.dibujar();
                 }
 
-                // Dibujar y actualizar partículas de las palabras/corazones centrales
+                // Actualizar y dibujar partículas centrales
                 for (let p of particulasTexto) {
                     p.actualizar();
                     p.dibujar();
