@@ -38,21 +38,19 @@
             transform: scale(0.95);
         }
 
-        /* Pantalla principal (El bosque) */
-        #paisaje {
+        /* Pantalla principal (Fondo negro puro con las flores flotando) */
+        #espacio-flores {
             display: none; /* Oculto hasta presionar el botón */
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1964&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+            background-color: #000000;
             overflow: hidden;
         }
 
-        /* Efecto de gravedad cero (Flores flotando suavemente) */
+        /* Efecto de gravedad cero (Flores flotando suavemente en el fondo negro) */
         .flor-flotando {
             position: absolute;
             width: 35px;
@@ -90,30 +88,30 @@
         <button id="boton-inicio">Presiona</button>
     </div>
 
-    <!-- Pantalla del bosque -->
-    <div id="paisaje"></div>
+    <!-- Pantalla con fondo negro y efecto flotante -->
+    <div id="espacio-flores"></div>
 
     <script>
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
-        const paisaje = document.getElementById('paisaje');
+        const espacioFlores = document.getElementById('espacio-flores');
 
         botonInicio.addEventListener('click', function() {
-            // Ocultar inicio y mostrar el fondo del bosque
+            // Ocultar inicio y mostrar el espacio negro con las flores
             pantallaInicio.style.display = 'none';
-            paisaje.style.display = 'block';
+            espacioFlores.style.display = 'block';
 
             // Generar las flores flotando en gravedad cero
             crearEfectoGravedadCero();
         });
 
         function crearEfectoGravedadCero() {
-            const cantidadFlores = 20; // Número de flores flotando a la vez
+            const cantidadFlores = 25; // Número de flores flotando a la vez
             for (let i = 0; i < cantidadFlores; i++) {
                 const flor = document.createElement('div');
                 flor.classList.add('flor-flotando');
 
-                // Posición inicial aleatoria en la pantalla (empiezan desde abajo hacia arriba)
+                // Posición inicial aleatoria en la pantalla
                 flor.style.left = Math.random() * 100 + 'vw';
                 flor.style.top = (Math.random() * 50 + 50) + 'vh'; 
 
@@ -122,7 +120,7 @@
                 flor.style.animationDuration = duracion + 's';
                 flor.style.animationDelay = (Math.random() * 5) + 's';
 
-                paisaje.appendChild(flor);
+                espacioFlores.appendChild(flor);
             }
         }
     </script>
