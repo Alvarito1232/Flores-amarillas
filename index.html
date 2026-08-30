@@ -200,7 +200,6 @@
                 });
             }
 
-            // Frase "Gracias por existir" dividida en 3 líneas verticales
             const secuencia = [
                 "Te amo",
                 "Mi niña",
@@ -297,7 +296,8 @@
                     this.destinoY = this.y;
                     const tonalidadesRojasPuras = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
                     this.color = tonalidadesRojasPuras[Math.floor(Math.random() * tonalidadesRojasPuras.length)];
-                    this.tamano = Math.random() * 1.8 + 1.1;
+                    // Partículas un pelo más finas en celular para evitar que se saturen
+                    this.tamano = esCelular ? (Math.random() * 1.2 + 0.8) : (Math.random() * 1.8 + 1.1);
                     this.velocidad = 0.14; 
                 }
 
@@ -310,7 +310,7 @@
 
                 dibujar() {
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 8;
+                    ctx.shadowBlur = 6;
                     ctx.shadowColor = '#FF0000';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tamano, 0, Math.PI * 2);
@@ -328,14 +328,13 @@
 
                 offCtx.fillStyle = '#ffffff';
 
-                // Si es un array (multilínea como Gracias / por / existir)
                 if (Array.isArray(itemSecuencia)) {
-                    let fontSize = esCelular ? Math.min(w / 6.5, 36) : Math.min(w / 7.0, 52);
+                    let fontSize = esCelular ? Math.min(w / 7.0, 32) : Math.min(w / 7.0, 52);
                     offCtx.font = `bold ${fontSize}px sans-serif`;
                     offCtx.textAlign = 'center';
                     offCtx.textBaseline = 'middle';
 
-                    let lineHeight = fontSize * 1.25;
+                    let lineHeight = fontSize * 1.2;
                     let totalHeight = lineHeight * itemSecuencia.length;
                     let startY = (h / 2) - (totalHeight / 2) + (lineHeight / 2);
 
@@ -343,7 +342,7 @@
                         offCtx.fillText(linea, w / 2, startY + (index * lineHeight));
                     });
                 } else {
-                    let fontSize = esCelular ? (itemSecuencia.length > 8 ? Math.min(w / 5.5, 45) : Math.min(w / 4.6, 58)) : Math.min(w / 5.2, 80);
+                    let fontSize = esCelular ? (itemSecuencia.length > 8 ? Math.min(w / 5.8, 40) : Math.min(w / 4.8, 50)) : Math.min(w / 5.2, 80);
                     offCtx.font = `bold ${fontSize}px sans-serif`;
                     offCtx.textAlign = 'center';
                     offCtx.textBaseline = 'middle';
@@ -352,7 +351,8 @@
 
                 const imgData = offCtx.getImageData(0, 0, w, h);
                 const puntos = [];
-                const salto = esCelular ? 4 : 5;
+                // SALTO CLAVE: En celular usamos un salto mayor (6) para que las letras respiren y se lean impecables, sin amontonarse ni verse "rellenas"
+                const salto = esCelular ? 6 : 5;
 
                 for (let y = 0; y < h; y += salto) {
                     for (let x = 0; x < w; x += salto) {
@@ -386,7 +386,7 @@
                 return puntos;
             }
 
-            const totalParticulas = esCelular ? 1000 : 1400;
+            const totalParticulas = esCelular ? 750 : 1400;
             for (let i = 0; i < totalParticulas; i++) {
                 particulasTexto.push(new ParticulaTexto());
             }
