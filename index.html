@@ -211,7 +211,7 @@
             let indicePaso = 0;
             let particulasTexto = [];
             let contadorFrames = 0;
-            const duracionPaso = 180; 
+            const duracionPaso = 210; // Tiempo generoso para que se luzcan unidas y luego se separen
 
             class CorazonLluvia {
                 constructor() {
@@ -290,15 +290,18 @@
 
             class ParticulaTexto {
                 constructor() {
+                    // Nacen dispersas por toda la pantalla al azar
                     this.x = Math.random() * window.innerWidth;
                     this.y = Math.random() * window.innerHeight;
                     this.destinoX = this.x;
                     this.destinoY = this.y;
+                    
                     const tonalidadesRojasPuras = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
                     this.color = tonalidadesRojasPuras[Math.floor(Math.random() * tonalidadesRojasPuras.length)];
-                    // Partículas un pelo más finas en celular para evitar que se saturen
                     this.tamano = esCelular ? (Math.random() * 1.2 + 0.8) : (Math.random() * 1.8 + 1.1);
-                    this.velocidad = 0.14; 
+                    
+                    // Movimiento con inercia elástica para que viajen suavemente de un lado a otro
+                    this.velocidad = Math.random() * 0.04 + 0.06; 
                 }
 
                 actualizar() {
@@ -351,7 +354,6 @@
 
                 const imgData = offCtx.getImageData(0, 0, w, h);
                 const puntos = [];
-                // SALTO CLAVE: En celular usamos un salto mayor (6) para que las letras respiren y se lean impecables, sin amontonarse ni verse "rellenas"
                 const salto = esCelular ? 6 : 5;
 
                 for (let y = 0; y < h; y += salto) {
@@ -397,20 +399,30 @@
                 lluvia.push(new CorazonLluvia());
             }
 
-            function actualizarDestinos() {
-                let actual = secuencia[indicePaso];
-                let puntosObjetivo = (actual === "CORAZON") ? obtenerPuntosCorazon() : obtenerPuntosTexto(actual);
+            function actualizarDestinos(esDispersar) {
+                if (esDispersar) {
+                    // FASE DE SEPARACIÓN: Mandamos los puntos a posiciones aleatorias por toda la pantalla
+                    for (let p of particulasTexto) {
+                        p.destinoX = Math.random() * window.innerWidth;
+                        p.destinoY = Math.random() * window.innerHeight;
+                    }
+                } else {
+                    // FASE DE UNIÓN: Recogen los puntos exactos de la siguiente palabra/corazón
+                    let actual = secuencia[indicePaso];
+                    let puntosObjetivo = (actual === "CORAZON") ? obtenerPuntosCorazon() : obtenerPuntosTexto(actual);
 
-                for (let i = 0; i < particulasTexto.length; i++) {
-                    if (puntosObjetivo.length > 0) {
-                        let pt = puntosObjetivo[i % puntosObjetivo.length];
-                        particulasTexto[i].destinoX = pt.x + (Math.random() - 0.5) * 3;
-                        particulasTexto[i].destinoY = pt.y + (Math.random() - 0.5) * 3;
+                    for (let i = 0; i < particulasTexto.length; i++) {
+                        if (puntosObjetivo.length > 0) {
+                            let pt = puntosObjetivo[i % puntosObjetivo.length];
+                            particulasTexto[i].destinoX = pt.x + (Math.random() - 0.5) * 3;
+                            particulasTexto[i].destinoY = pt.y + (Math.random() - 0.5) * 3;
+                        }
                     }
                 }
             }
 
-            actualizarDestinos();
+            // Arrancamos uniendo los puntos hacia la primera palabra
+            actualizarDestinos(false);
 
             function animar() {
                 ctx.fillStyle = '#000000';
@@ -422,10 +434,17 @@
                 }
 
                 contadorFrames++;
+
+                // Casi al final del tiempo de cada palabra (últimos 40 frames), hacemos que se SEPAREN volando
+                if (contadorFrames === duracionPaso - 40) {
+                    actualizarDestinos(true);
+                }
+
+                // Al cumplirse el ciclo total, cambiamos de palabra y las volvemos a UNIR
                 if (contadorFrames > duracionPaso) {
                     contadorFrames = 0;
                     indicePaso = (indicePaso + 1) % secuencia.length;
-                    actualizarDestinos();
+                    actualizarDestinos(false);
                 }
 
                 let esCorazonActivo = (secuencia[indicePaso] === "CORAZON");
