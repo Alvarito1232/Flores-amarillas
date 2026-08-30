@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Flores Amarillas - 21 de Septiembre</title>
+    <title>Sorpresa Romántica - 21 de Septiembre</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -21,7 +21,6 @@
             z-index: 10;
         }
 
-        /* Grupo interactivo (botón + texto que se mueven juntos) */
         #grupo-interactivo {
             display: flex;
             flex-direction: column;
@@ -55,8 +54,8 @@
             text-align: center;
         }
 
-        /* Pantalla de lluvia de corazones */
-        #espacio-lluvia {
+        /* Pantalla principal de la sorpresa */
+        #espacio-sorpresa {
             display: none;
             position: absolute;
             top: 0;
@@ -67,53 +66,108 @@
             overflow: hidden;
         }
 
-        /* Estilo de corazones con colores bien combinados */
-        .corazon {
+        /* Lluvia de corazones de colores */
+        .corazon-lluvia {
             position: absolute;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             transform: rotate(45deg);
             animation: caidaLluvia linear infinite;
         }
 
-        .corazon::before,
-        .corazon::after {
+        .corazon-lluvia::before,
+        .corazon-lluvia::after {
             content: '';
             position: absolute;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background-color: inherit;
         }
 
-        .corazon::before {
-            top: -9px;
-            left: 0;
-        }
-
-        .corazon::after {
-            top: 0;
-            left: -9px;
-        }
+        .corazon-lluvia::before { top: -8px; left: 0; }
+        .corazon-lluvia::after { top: 0; left: -8px; }
 
         @keyframes caidaLluvia {
-            0% {
-                transform: translateY(-40px) rotate(45deg);
-                opacity: 0;
+            0% { transform: translateY(-40px) rotate(45deg); opacity: 0; }
+            15% { opacity: 1; }
+            100% { transform: translateY(105vh) rotate(405deg); opacity: 0.9; }
+        }
+
+        /* Contenedor central para el efecto de corazones anidados del video */
+        #centro-animacion {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        /* Corazones gigantes en el centro que pulsan imitando el video */
+        .corazon-central {
+            position: absolute;
+            border: 2px dashed rgba(255, 64, 129, 0.7);
+            background: rgba(255, 20, 147, 0.15);
+            transform: rotate(45deg);
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+            animation: latidoCentro 2s infinite ease-in-out;
+        }
+
+        .corazon-central::before,
+        .corazon-central::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: inherit;
+            border: inherit;
+        }
+
+        /* Tamaños escalonados para hacer el efecto de varios corazones dentro de otros */
+        .c1 { width: 80px; height: 80px; animation-delay: 0s; }
+        .c1::before { width: 80px; height: 80px; top: -40px; left: 0; }
+        .c1::after { width: 80px; height: 80px; top: 0; left: -40px; }
+
+        .c2 { width: 150px; height: 150px; animation-delay: 0.3s; }
+        .c2::before { width: 150px; height: 150px; top: -75px; left: 0; }
+        .c2::after { width: 150px; height: 150px; top: 0; left: -75px; }
+
+        .c3 { width: 220px; height: 220px; animation-delay: 0.6s; }
+        .c3::before { width: 220px; height: 220px; top: -110px; left: 0; }
+        .c3::after { width: 220px; height: 220px; top: 0; left: -110px; }
+
+        @keyframes latidoCentro {
+            0%, 100% {
+                transform: scale(1) rotate(45deg);
+                opacity: 0.6;
             }
-            10% {
+            50% {
+                transform: scale(1.12) rotate(45deg);
                 opacity: 1;
+                box-shadow: 0 0 35px rgba(255, 105, 180, 0.9);
             }
-            100% {
-                transform: translateY(105vh) rotate(405deg);
-                opacity: 0.9;
-            }
+        }
+
+        /* Texto frontal opcional dentro del corazón central */
+        #texto-central {
+            position: absolute;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #FF1493;
+            letter-spacing: 2px;
+            z-index: 6;
+            animation: latidoCentro 2s infinite ease-in-out;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla inicial con los 3 intentos -->
     <div id="pantalla-inicio">
         <div id="grupo-interactivo">
             <button id="boton-inicio">Presiona aquí ✨</button>
@@ -121,14 +175,20 @@
         </div>
     </div>
 
-    <!-- Pantalla con fondo negro y lluvia de corazones -->
-    <div id="espacio-lluvia"></div>
+    <div id="espacio-sorpresa">
+        <div id="centro-animacion">
+            <div class="corazon-central c3"></div>
+            <div class="corazon-central c2"></div>
+            <div class="corazon-central c1"></div>
+            <div id="texto-central">Mi Niña ❤️</div>
+        </div>
+    </div>
 
     <script>
         const grupoInteractivo = document.getElementById('grupo-interactivo');
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
-        const espacioLluvia = document.getElementById('espacio-lluvia');
+        const espacioSorpresa = document.getElementById('espacio-sorpresa');
         const textoIntentos = document.getElementById('texto-intentos');
 
         let intentos = 0;
@@ -146,35 +206,28 @@
             } 
             else if (intentos >= 3) {
                 pantallaInicio.style.display = 'none';
-                espacioLluvia.style.display = 'block';
+                espacioSorpresa.style.display = 'block';
                 iniciarLluviaDeCorazones();
             }
         });
 
         function iniciarLluviaDeCorazones() {
-            // Tonos románticos y elegantes que combinan perfectamente (Rojos, rosas, fucsias, dorados y blanco suave)
             const colores = ['#FF1744', '#FF4081', '#E91E63', '#FF5252', '#FF80AB', '#FFD700', '#FFA000', '#FFFFFF'];
-            const cantidad = 70; 
+            const cantidad = 60; 
 
             for (let i = 0; i < cantidad; i++) {
                 const corazon = document.createElement('div');
-                corazon.classList.add('corazon');
+                corazon.classList.add('corazon-lluvia');
 
-                // Color aleatorio de la paleta armónica
                 corazon.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
-
-                // Posición horizontal aleatoria
                 corazon.style.left = Math.random() * 100 + 'vw';
-                
-                // Sin retrasos largos para que comiencen de inmediato
                 corazon.style.top = (Math.random() * -100 - 20) + 'px';
 
-                // Caída mucho más rápida y fluida
-                const duracion = Math.random() * 1.5 + 1.2; // Entre 1.2 y 2.7 segundos (más rápido)
+                const duracion = Math.random() * 2 + 1.5; 
                 corazon.style.animationDuration = duracion + 's';
-                corazon.style.animationDelay = (Math.random() * 1.5) + 's';
+                corazon.style.animationDelay = (Math.random() * 2) + 's';
 
-                espacioLluvia.appendChild(corazon);
+                espacioSorpresa.appendChild(corazon);
             }
         }
     </script>
