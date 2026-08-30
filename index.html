@@ -2,209 +2,129 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Flores Amarillas - 21 de Septiembre</title>
     <style>
-        /* Estilos para la primera pantalla (fondo negro) */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #000000; /* Fondo negro */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-            transition: background-color 1s ease;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        #boton-inicio {
-            padding: 20px 40px;
-            font-size: 24px;
-            background-color: #FFD700; /* Color amarillo */
-            color: black;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        #boton-inicio:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-
-        /* Estilos para la segunda pantalla (paisaje) */
-        #paisaje {
-            display: none; /* Oculto inicialmente */
+        /* Pantalla de inicio (Fondo negro con botón) */
+        #pantalla-inicio {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1964&auto=format&fit=crop'); /* Imagen de un paisaje con flores amarillas */
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-        }
-
-        #flor-grande {
-            position: absolute;
-            bottom: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px; /* Tamaño de la flor grande */
-            height: auto;
-            animation: crecer 2s ease-out;
-        }
-
-        @keyframes crecer {
-            from { transform: translateX(-50%) scale(0); }
-            to { transform: translateX(-50%) scale(1); }
-        }
-
-        /* Animación de hojas cayendo */
-        .hoja {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png'); /* Icono de hoja amarilla */
-            background-size: contain;
-            background-repeat: no-repeat;
-            animation: caer linear infinite;
-            opacity: 0.8;
-        }
-
-        @keyframes caer {
-            0% { transform: translateY(-50px) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(720deg); }
-        }
-
-        /* Estilos para la hoja con el mensaje final */
-        #hoja-mensaje {
-            position: absolute;
-            /* Esta posición se ajustará con JavaScript para que parezca que cae */
-            top: 0;
-            left: 0;
-            width: 40px;
-            height: 40px;
-            background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png'); /* Icono de hoja amarilla */
-            background-size: contain;
-            background-repeat: no-repeat;
-            cursor: pointer;
-            animation: caer-lento 5s linear forwards; /* Cae una sola vez y se detiene */
-            z-index: 10;
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 10;
         }
 
-        #hoja-mensaje:hover {
-            transform: scale(1.2); /* Efecto al pasar el ratón */
+        #boton-inicio {
+            padding: 15px 35px;
+            font-size: 20px;
+            background-color: #FFD700;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            transition: transform 0.2s ease;
         }
 
-        @keyframes caer-lento {
-            0% { transform: translateY(-60px) rotate(0deg); }
-            100% { transform: translateY(60vh) rotate(360deg); } /* Cae hasta un punto medio de la pantalla */
+        #boton-inicio:active {
+            transform: scale(0.95);
         }
 
-        #mensaje-final {
-            display: none; /* Oculto inicialmente */
+        /* Pantalla principal (El bosque) */
+        #paisaje {
+            display: none; /* Oculto hasta presionar el botón */
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8); /* Fondo negro semitransparente */
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 20;
-            animation: aparecer-mensaje 1s ease-out;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1964&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
         }
 
-        @keyframes aparecer-mensaje {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* Efecto de gravedad cero (Flores flotando suavemente) */
+        .flor-flotando {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png'); /* Icono de flor/hoja amarilla */
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.85;
+            animation: flotarCeroGravedad linear infinite;
         }
 
-        #mensaje-final h1 {
-            font-size: 48px;
-            margin: 0;
-            color: #FFD700;
-            text-shadow: 0 0 10px #FFD700;
+        @keyframes flotarCeroGravedad {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(30px, -40px) rotate(90deg);
+            }
+            50% {
+                transform: translate(-20px, -80px) rotate(180deg);
+            }
+            75% {
+                transform: translate(40px, -120px) rotate(270deg);
+            }
+            100% {
+                transform: translate(-10px, -180px) rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- Pantalla inicial -->
     <div id="pantalla-inicio">
         <button id="boton-inicio">Presiona</button>
     </div>
 
-    <div id="paisaje">
-        <img id="flor-grande" src="https://png.pngtree.com/png-vector/20230829/ourmid/pngtree-big-yellow-daisy-flower-png-image_9499695.png" alt="Flor Amarilla Grande">
-        
-        <div id="hoja-mensaje"></div>
-        
-        <div id="mensaje-final">
-            <h1>¡Feliz 21 de septiembre!</h1>
-        </div>
-    </div>
+    <!-- Pantalla del bosque -->
+    <div id="paisaje"></div>
 
     <script>
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
         const paisaje = document.getElementById('paisaje');
-        const hojaMensaje = document.getElementById('hoja-mensaje');
-        const mensajeFinal = document.getElementById('mensaje-final');
 
-        // Al presionar el botón de inicio
         botonInicio.addEventListener('click', function() {
+            // Ocultar inicio y mostrar el fondo del bosque
             pantallaInicio.style.display = 'none';
             paisaje.style.display = 'block';
-            
-            // Iniciar la animación de hojas cayendo
-            iniciarLluviaDeHojas();
+
+            // Generar las flores flotando en gravedad cero
+            crearEfectoGravedadCero();
         });
 
-        // Función para iniciar la lluvia de hojas (hojas decorativas)
-        function iniciarLluviaDeHojas() {
-            const cantidadHojas = 15;
-            for (let i = 0; i < cantidadHojas; i++) {
-                const hoja = document.createElement('div');
-                hoja.classList.add('hoja');
-                hoja.style.left = Math.random() * 100 + 'vw'; // Posición horizontal aleatoria
-                hoja.style.animationDuration = Math.random() * 3 + 3 + 's'; // Duración de caída aleatoria
-                hoja.style.animationDelay = Math.random() * 2 + 's'; // Retraso de inicio aleatorio
-                paisaje.appendChild(hoja);
-                
-                // Eliminar la hoja del DOM después de que termine la animación para no sobrecargar la página
-                hoja.addEventListener('animationiteration', () => {
-                    // Esto no se usa con 'infinite', pero es bueno tenerlo en cuenta si fuera necesario
-                });
-                // Esta es una forma más eficiente de eliminar la hoja después de su ciclo de animación
-                setTimeout(() => {
-                    hoja.remove();
-                }, (parseFloat(hoja.style.animationDuration) + parseFloat(hoja.style.animationDelay)) * 1000);
+        function crearEfectoGravedadCero() {
+            const cantidadFlores = 20; // Número de flores flotando a la vez
+            for (let i = 0; i < cantidadFlores; i++) {
+                const flor = document.createElement('div');
+                flor.classList.add('flor-flotando');
+
+                // Posición inicial aleatoria en la pantalla (empiezan desde abajo hacia arriba)
+                flor.style.left = Math.random() * 100 + 'vw';
+                flor.style.top = (Math.random() * 50 + 50) + 'vh'; 
+
+                // Velocidad y retraso aleatorios para que se vea natural
+                const duracion = Math.random() * 6 + 4; // Entre 4 y 10 segundos
+                flor.style.animationDuration = duracion + 's';
+                flor.style.animationDelay = (Math.random() * 5) + 's';
+
+                paisaje.appendChild(flor);
             }
         }
-
-        // Al hacer clic en la hoja especial
-        hojaMensaje.addEventListener('click', function(event) {
-            // Detener la propagación del clic para que no afecte al paisaje
-            event.stopPropagation();
-            
-            // Detener la animación de caída de la hoja especial y ocultarla
-            hojaMensaje.style.animation = 'none';
-            hojaMensaje.style.display = 'none';
-            
-            // Mostrar el mensaje final
-            mensajeFinal.style.display = 'block';
-        });
     </script>
 
 </body>
