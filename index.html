@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        /* Pantalla de inicio interactiva */
+        /* Pantalla de inicio con temática de espacio exterior, estrellas y fugaces */
         #pantalla-inicio {
             position: absolute;
             top: 0;
@@ -19,7 +19,36 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
-            background: #000000;
+            background: radial-gradient(circle at center, #1a001a 0%, #000000 100%);
+            overflow: hidden;
+        }
+
+        /* Estrellas estáticas del fondo de inicio */
+        .estrella-espacio {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            animation: parpadeoStar 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes parpadeoStar {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Estrellas fugaces */
+        .estrella-fugaz {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0));
+            transform: rotate(-45deg);
+            animation: disparoFugaz 3s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes disparoFugaz {
+            0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; width: 100px; }
+            100% { transform: translateX(-600px) translateY(600px) rotate(-45deg); opacity: 0; width: 10px; }
         }
 
         #grupo-interactivo {
@@ -27,35 +56,39 @@
             flex-direction: column;
             align-items: center;
             transition: transform 0.3s ease;
+            z-index: 5;
         }
 
+        /* Botón rojo elegante y llamativo */
         #boton-inicio {
-            padding: 18px 40px;
+            padding: 18px 45px;
             font-size: 22px;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-            border: none;
+            background: linear-gradient(135deg, #FF1744, #D50000);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 40px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.8);
             transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
         #boton-inicio:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 35px rgba(255, 215, 0, 0.9);
+            transform: scale(1.08);
+            box-shadow: 0 0 45px rgba(255, 23, 68, 1);
         }
 
         #texto-intentos {
-            margin-top: 20px;
-            color: #aaa;
-            font-size: 15px;
+            margin-top: 22px;
+            color: #ff80ab;
+            font-size: 16px;
             letter-spacing: 1px;
             text-align: center;
+            text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
         }
 
-        /* Pantalla de animación con fondo negro absoluto */
+        /* Pantalla de animación con fondo negro absoluto para celulares y laptops */
         #espacio-animacion {
             display: none;
             position: absolute;
@@ -75,7 +108,9 @@
 </head>
 <body>
 
-    <div id="pantalla-inicio">
+    <div id="pantalla-inicio" id="contenedor-espacio">
+        <div id="grupo-estrellas"></div>
+        
         <div id="grupo-interactivo">
             <button id="boton-inicio">Presiona aquí ✨</button>
             <div id="texto-intentos">Toca para descubrir algo especial</div>
@@ -87,6 +122,29 @@
     </div>
 
     <script>
+        // Crear estrellas y estrellas fugaces en la pantalla de inicio para celulares y laptops
+        const contenedorEstrellas = document.getElementById('grupo-estrellas');
+        for (let i = 0; i < 70; i++) {
+            let star = document.createElement('div');
+            star.className = 'estrella-espacio';
+            let size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.animationDelay = (Math.random() * 2) + 's';
+            contenedorEstrellas.appendChild(star);
+        }
+
+        for (let j = 0; j < 3; j++) {
+            let fugaz = document.createElement('div');
+            fugaz.className = 'estrella-fugaz';
+            fugaz.style.top = (Math.random() * 50) + 'vh';
+            fugaz.style.left = (Math.random() * 50 + 50) + 'vw';
+            fugaz.style.animationDelay = (j * 2.5 + Math.random()) + 's';
+            contenedorEstrellas.appendChild(fugaz);
+        }
+
         const grupoInteractivo = document.getElementById('grupo-interactivo');
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
@@ -137,7 +195,7 @@
             let contadorFrames = 0;
             const duracionPaso = 180; 
 
-            // Lluvia de corazones fluida y con colisión precisa
+            // Lluvia de corazones rápida y fluida
             class CorazonLluvia {
                 constructor() {
                     this.reiniciar();
@@ -212,13 +270,16 @@
                 }
             }
 
+            // Partículas de las palabras con tonos más rojitos y brillantes
             class ParticulaTexto {
                 constructor() {
                     this.x = Math.random() * canvas.width;
                     this.y = Math.random() * canvas.height;
                     this.destinoX = this.x;
                     this.destinoY = this.y;
-                    this.color = Math.random() < 0.25 ? '#ffffff' : '#ff1744';
+                    // Mayor predominancia de rojos intensos y fucsias brillantes
+                    const tonalidadesRojas = ['#FF1744', '#FF2A55', '#D50000', '#FF4081', '#FF5252', '#FFFFFF'];
+                    this.color = tonalidadesRojas[Math.floor(Math.random() * tonalidadesRojas.length)];
                     this.tamano = Math.random() * 2.2 + 1.2;
                     this.velocidad = 0.12; 
                 }
@@ -232,8 +293,8 @@
 
                 dibujar() {
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 8;
-                    ctx.shadowColor = '#ff1744';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#FF1744';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tamano, 0, Math.PI * 2);
                     ctx.fill();
@@ -247,7 +308,8 @@
                 offScreenCanvas.height = canvas.height;
 
                 offCtx.fillStyle = '#ffffff';
-                let fontSize = Math.min(canvas.width / 6, 85);
+                // Adaptación responsiva de fuente para celular y laptop
+                let fontSize = Math.min(canvas.width / 5.5, 80);
                 offCtx.font = `bold ${fontSize}px sans-serif`;
                 offCtx.textAlign = 'center';
                 offCtx.textBaseline = 'middle';
@@ -272,14 +334,18 @@
                 const puntos = [];
                 const cx = canvas.width / 2;
                 const cy = canvas.height / 2;
+                
+                // Escala adaptable para celulares y laptops
+                let factorEscala = Math.min(canvas.width, canvas.height) / 750;
 
                 [60, 110, 160, 210].forEach(escala => {
+                    let escalaReal = escala * factorEscala;
                     for (let t = 0; t < Math.PI * 2; t += 0.08) {
                         let hx = 16 * Math.pow(Math.sin(t), 3);
                         let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
                         puntos.push({
-                            x: cx + hx * (escala / 15),
-                            y: cy + hy * (escala / 15)
+                            x: cx + hx * (escalaReal / 15),
+                            y: cy + hy * (escalaReal / 15)
                         });
                     }
                 });
@@ -313,7 +379,7 @@
             actualizarDestinos();
 
             function animar() {
-                // LIMPIEZA TOTAL: Fondo 100% negro puro en cada fotograma sin rastros de color rojo
+                // Fondo 100% negro puro limpio
                 ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
