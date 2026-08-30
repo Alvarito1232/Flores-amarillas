@@ -16,10 +16,17 @@
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
+        }
+
+        /* Contenedor que agrupa el botón y el texto para que se muevan juntos */
+        #grupo-interactivo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
         }
 
         #boton-inicio {
@@ -33,7 +40,6 @@
             font-weight: bold;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
             transition: all 0.3s ease;
-            position: relative;
         }
 
         #boton-inicio:hover {
@@ -43,9 +49,10 @@
 
         #texto-intentos {
             margin-top: 20px;
-            color: #888;
-            font-size: 14px;
+            color: #aaa;
+            font-size: 15px;
             letter-spacing: 1px;
+            text-align: center;
         }
 
         /* Pantalla de lluvia de flores */
@@ -60,16 +67,29 @@
             overflow: hidden;
         }
 
-        /* Estilo de las flores hechas con código puro cayendo en lluvia */
+        /* Estilo de la flor hecha con código (pétalos y centro brillante) */
         .flor {
             position: absolute;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             background-color: #FFD700;
             border-radius: 50%;
-            box-shadow: 0 0 8px #FFD700, 0 0 15px #FFA500;
+            box-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
             animation: caidaLluvia linear infinite;
         }
+
+        /* Creamos los pétalos usando pseudo-elementos para que parezca una flor real */
+        .flor::before, .flor::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #FFD700;
+        }
+        .flor::before { top: -6px; left: 0; }
+        .flor::after { top: 0; left: -6px; }
 
         @keyframes caidaLluvia {
             0% {
@@ -85,14 +105,17 @@
 
     <!-- Pantalla inicial con los 3 intentos -->
     <div id="pantalla-inicio">
-        <button id="boton-inicio">Presiona aquí ✨</button>
-        <div id="texto-intentos">Toca para descubrir algo especial</div>
+        <div id="grupo-interactivo">
+            <button id="boton-inicio">Presiona aquí ✨</button>
+            <div id="texto-intentos">Toca para descubrir algo especial</div>
+        </div>
     </div>
 
     <!-- Pantalla con fondo negro y lluvia de flores -->
     <div id="espacio-lluvia"></div>
 
     <script>
+        const grupoInteractivo = document.getElementById('grupo-interactivo');
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
         const espacioLluvia = document.getElementById('espacio-lluvia');
@@ -104,11 +127,13 @@
             intentos++;
 
             if (intentos === 1) {
-                botonInicio.style.transform = 'translate(110px, -70px)';
+                // Todo el grupo (botón + texto) se mueve a la derecha/arriba
+                grupoInteractivo.style.transform = 'translate(110px, -70px)';
                 textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
             } 
             else if (intentos === 2) {
-                botonInicio.style.transform = 'translate(-110px, 80px)';
+                // Todo el grupo se mueve al otro lado
+                grupoInteractivo.style.transform = 'translate(-110px, 80px)';
                 textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
             } 
             else if (intentos >= 3) {
@@ -119,7 +144,7 @@
         });
 
         function iniciarLluviaDeFlores() {
-            const cantidad = 80; // ¡Bastantes flores cayendo en tipo lluvia!
+            const cantidad = 70; // Cantidad masiva de flores cayendo
             for (let i = 0; i < cantidad; i++) {
                 const flor = document.createElement('div');
                 flor.classList.add('flor');
@@ -127,7 +152,7 @@
                 // Posición horizontal aleatoria
                 flor.style.left = Math.random() * 100 + 'vw';
                 
-                // Velocidad de caída rápida y fluida para simular lluvia
+                // Velocidad de caída tipo lluvia fluida
                 const duracion = Math.random() * 2 + 2; // Entre 2 y 4 segundos
                 flor.style.animationDuration = duracion + 's';
                 flor.style.animationDelay = (Math.random() * 4) + 's';
