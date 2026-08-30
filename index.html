@@ -135,9 +135,9 @@
             let indicePaso = 0;
             let particulasTexto = [];
             let contadorFrames = 0;
-            const duracionPaso = 180; // Transiciones más dinámicas y fluidas
+            const duracionPaso = 180; 
 
-            // Lluvia de corazones rápida, fluida y con colisión precisa
+            // Lluvia de corazones fluida y con colisión precisa
             class CorazonLluvia {
                 constructor() {
                     this.reiniciar();
@@ -146,7 +146,7 @@
                 reiniciar() {
                     this.x = Math.random() * canvas.width;
                     this.y = -30 - Math.random() * 150;
-                    this.vy = Math.random() * 4 + 3; // Caída rápida estilo lluvia
+                    this.vy = Math.random() * 4 + 3; 
                     this.vx = (Math.random() - 0.5) * 2;
                     this.tamano = Math.random() * 7 + 5;
                     const colores = ['#FF1744', '#FF4081', '#FF5252', '#FF80AB', '#FFD700', '#FFFFFF', '#00E676'];
@@ -165,7 +165,6 @@
                     let colisiona = false;
 
                     if (esCorazonActivo) {
-                        // Radio de colisión para el corazón grande central
                         let dx = this.x - centroX;
                         let dy = this.y - centroY;
                         let distancia = Math.sqrt(dx * dx + dy * dy);
@@ -173,7 +172,6 @@
                             colisiona = true;
                         }
                     } else {
-                        // Colisión rectangular precisa para las palabras horizontales
                         if (this.y > centroY - 45 && this.y < centroY + 45 &&
                             this.x > centroX - 220 && this.x < centroX + 220) {
                             colisiona = true;
@@ -181,7 +179,6 @@
                     }
 
                     if (colisiona) {
-                        // Rebote natural hacia los costados para evitar que crucen el texto o figura
                         if (this.x < centroX) {
                             this.vx = -5;
                             this.x -= 6;
@@ -192,7 +189,6 @@
                         this.y -= 2;
                     }
 
-                    // Reciclar el corazón cuando sale de la pantalla
                     if (this.y > canvas.height + 30 || this.x < -50 || this.x > canvas.width + 50) {
                         this.reiniciar();
                     }
@@ -216,7 +212,6 @@
                 }
             }
 
-            // Partículas que forman las palabras y la figura del corazón
             class ParticulaTexto {
                 constructor() {
                     this.x = Math.random() * canvas.width;
@@ -225,7 +220,7 @@
                     this.destinoY = this.y;
                     this.color = Math.random() < 0.25 ? '#ffffff' : '#ff1744';
                     this.tamano = Math.random() * 2.2 + 1.2;
-                    this.velocidad = 0.12; // Mayor fluidez y velocidad de reubicación
+                    this.velocidad = 0.12; 
                 }
 
                 actualizar() {
@@ -296,7 +291,7 @@
                 particulasTexto.push(new ParticulaTexto());
             }
 
-            const totalCorazonesLluvia = 70; // Lluvia abundante y dinámica
+            const totalCorazonesLluvia = 70;
             let lluvia = [];
             for (let i = 0; i < totalCorazonesLluvia; i++) {
                 lluvia.push(new CorazonLluvia());
@@ -318,8 +313,8 @@
             actualizarDestinos();
 
             function animar() {
-                // Fondo completamente negro con un rastro muy sutil y limpio
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                // LIMPIEZA TOTAL: Fondo 100% negro puro en cada fotograma sin rastros de color rojo
+                ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 contadorFrames++;
@@ -331,13 +326,11 @@
 
                 let esCorazonActivo = (secuencia[indicePaso] === "CORAZON");
 
-                // Actualizar y dibujar lluvia de corazones rápida con colisión corregida
                 for (let c of lluvia) {
                     c.actualizar(esCorazonActivo);
                     c.dibujar();
                 }
 
-                // Actualizar y dibujar partículas de las palabras y el corazón
                 for (let p of particulasTexto) {
                     p.actualizar();
                     p.dibujar();
