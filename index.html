@@ -48,8 +48,8 @@
             letter-spacing: 1px;
         }
 
-        /* Pantalla principal con efecto gravedad cero y caída */
-        #espacio-efecto {
+        /* Pantalla de lluvia de flores */
+        #espacio-lluvia {
             display: none;
             position: absolute;
             top: 0;
@@ -60,51 +60,42 @@
             overflow: hidden;
         }
 
-        /* Estilo para las flores que flotan y caen */
+        /* Estilo de las flores hechas con código puro cayendo en lluvia */
         .flor {
             position: absolute;
-            width: 18px;
-            height: 18px;
-            background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            opacity: 0.85;
-            animation: efectoGravedadYCaida linear infinite;
+            width: 14px;
+            height: 14px;
+            background-color: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #FFD700, 0 0 15px #FFA500;
+            animation: caidaLluvia linear infinite;
         }
 
-        @keyframes efectoGravedadYCaida {
+        @keyframes caidaLluvia {
             0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            30% {
-                /* Primero flotan libremente como en gravedad cero */
-                transform: translate(40px, -50px) rotate(90deg);
-            }
-            60% {
-                transform: translate(-30px, -20px) rotate(180deg);
+                transform: translateY(-20px) rotate(0deg);
             }
             100% {
-                /* Y luego empiezan a caer hacia abajo */
-                transform: translate(10px, 105vh) rotate(360deg);
+                transform: translateY(105vh) rotate(360deg);
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla inicial con los 3 intentos del botón -->
+    <!-- Pantalla inicial con los 3 intentos -->
     <div id="pantalla-inicio">
         <button id="boton-inicio">Presiona aquí ✨</button>
         <div id="texto-intentos">Toca para descubrir algo especial</div>
     </div>
 
-    <!-- Pantalla con fondo negro y el efecto de flores -->
-    <div id="espacio-efecto"></div>
+    <!-- Pantalla con fondo negro y lluvia de flores -->
+    <div id="espacio-lluvia"></div>
 
     <script>
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
-        const espacioEfecto = document.getElementById('espacio-efecto');
+        const espacioLluvia = document.getElementById('espacio-lluvia');
         const textoIntentos = document.getElementById('texto-intentos');
 
         let intentos = 0;
@@ -113,36 +104,35 @@
             intentos++;
 
             if (intentos === 1) {
-                botonInicio.style.transform = 'translate(100px, -80px)';
+                botonInicio.style.transform = 'translate(110px, -70px)';
                 textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
             } 
             else if (intentos === 2) {
-                botonInicio.style.transform = 'translate(-120px, 90px)';
+                botonInicio.style.transform = 'translate(-110px, 80px)';
                 textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
             } 
             else if (intentos >= 3) {
                 pantallaInicio.style.display = 'none';
-                espacioEfecto.style.display = 'block';
-                iniciarEfectoFlores();
+                espacioLluvia.style.display = 'block';
+                iniciarLluviaDeFlores();
             }
         });
 
-        function iniciarEfectoFlores() {
-            const cantidad = 60; // Bastantes flores en pantalla
+        function iniciarLluviaDeFlores() {
+            const cantidad = 80; // ¡Bastantes flores cayendo en tipo lluvia!
             for (let i = 0; i < cantidad; i++) {
                 const flor = document.createElement('div');
                 flor.classList.add('flor');
 
-                // Posición aleatoria en la pantalla
+                // Posición horizontal aleatoria
                 flor.style.left = Math.random() * 100 + 'vw';
-                flor.style.top = (Math.random() * 50) + 'vh';
-
-                // Duración de la animación variada para que se vea natural
-                const duracion = Math.random() * 4 + 4; // Entre 4 y 8 segundos
+                
+                // Velocidad de caída rápida y fluida para simular lluvia
+                const duracion = Math.random() * 2 + 2; // Entre 2 y 4 segundos
                 flor.style.animationDuration = duracion + 's';
-                flor.style.animationDelay = (Math.random() * 5) + 's';
+                flor.style.animationDelay = (Math.random() * 4) + 's';
 
-                espacioEfecto.appendChild(flor);
+                espacioLluvia.appendChild(flor);
             }
         }
     </script>
