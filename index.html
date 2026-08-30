@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        /* Pantalla de inicio con espacio exterior, estrellas y fugaces */
+        /* Pantalla de inicio espacial con estrellas y fugaces */
         #pantalla-inicio {
             position: absolute;
             top: 0;
@@ -21,7 +21,7 @@
             z-index: 10;
             background: radial-gradient(circle at center, #1a001a 0%, #000000 100%);
             overflow: hidden;
-            padding: 20px;
+            padding: 15px;
         }
 
         .estrella-espacio {
@@ -57,15 +57,15 @@
             transition: transform 0.3s ease;
             z-index: 5;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
             text-align: center;
         }
 
         #boton-inicio {
             width: 100%;
-            max-width: 280px;
-            padding: 16px 20px;
-            font-size: 20px;
+            max-width: 260px;
+            padding: 15px 20px;
+            font-size: 19px;
             background: linear-gradient(135deg, #FF1744, #D50000);
             color: #ffffff;
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -84,9 +84,9 @@
         }
 
         #texto-intentos {
-            margin-top: 20px;
+            margin-top: 18px;
             color: #ff80ab;
-            font-size: 15px;
+            font-size: 14px;
             letter-spacing: 0.5px;
             text-align: center;
             text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
@@ -162,11 +162,11 @@
             intentos++;
 
             if (intentos === 1) {
-                grupoInteractivo.style.transform = 'translate(80px, -60px)';
+                grupoInteractivo.style.transform = 'translate(60px, -50px)';
                 textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
             } 
             else if (intentos === 2) {
-                grupoInteractivo.style.transform = 'translate(-80px, 70px)';
+                grupoInteractivo.style.transform = 'translate(-60px, 60px)';
                 textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
             } 
             else if (intentos >= 3) {
@@ -180,7 +180,6 @@
             const canvas = document.getElementById('canvasSorpresa');
             const ctx = canvas.getContext('2d');
 
-            // Corrección de alta definición para que las letras no se vean pixeladas en cel ni PC
             function ajustarCanvas() {
                 const dpr = window.devicePixelRatio || 1;
                 canvas.width = window.innerWidth * dpr;
@@ -189,6 +188,18 @@
             }
             ajustarCanvas();
             window.addEventListener('resize', ajustarCanvas);
+
+            // Estrellas estáticas de fondo en el canvas principal
+            const estrellasFondoCanvas = [];
+            const cantidadEstrellasCanvas = esCelular ? 45 : 85;
+            for (let i = 0; i < cantidadEstrellasCanvas; i++) {
+                estrellasFondoCanvas.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    tamano: Math.random() * 1.5 + 0.5,
+                    alfa: Math.random() * 0.7 + 0.2
+                });
+            }
 
             const secuencia = [
                 "Te amo",
@@ -278,16 +289,17 @@
                 }
             }
 
-            // Partículas de texto en ROJO PURO y nítido
+            // Partículas de texto 100% ROJO PURO intenso y brillante
             class ParticulaTexto {
                 constructor() {
                     this.x = Math.random() * window.innerWidth;
                     this.y = Math.random() * window.innerHeight;
                     this.destinoX = this.x;
                     this.destinoY = this.y;
-                    // Rojo puro predominante y un toque de blanco para brillo nítido
-                    this.color = Math.random() < 0.15 ? '#FFFFFF' : '#FF0000';
-                    this.tamano = Math.random() * 2.2 + 1.2;
+                    // Mayor concentración de rojo puro absoluto para que resalte imponente
+                    const tonalidadesRojasPuras = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
+                    this.color = tonalidadesRojasPuras[Math.floor(Math.random() * tonalidadesRojasPuras.length)];
+                    this.tamano = Math.random() * 2.3 + 1.3;
                     this.velocidad = 0.14; 
                 }
 
@@ -300,7 +312,7 @@
 
                 dibujar() {
                     ctx.fillStyle = this.color;
-                    ctx.shadowBlur = 8;
+                    ctx.shadowBlur = 10;
                     ctx.shadowColor = '#FF0000';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.tamano, 0, Math.PI * 2);
@@ -325,7 +337,7 @@
 
                 const imgData = offCtx.getImageData(0, 0, w, h);
                 const puntos = [];
-                const salto = esCelular ? 3 : 4; // Muestreo más denso para que las letras queden perfectas
+                const salto = esCelular ? 3 : 4;
 
                 for (let y = 0; y < h; y += salto) {
                     for (let x = 0; x < w; x += salto) {
@@ -386,8 +398,15 @@
             actualizarDestinos();
 
             function animar() {
+                // Fondo negro puro
                 ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+                // Dibujar estrellas estáticas de fondo (simulando cielo estrellado)
+                for (let est of estrellasFondoCanvas) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${est.alfa})`;
+                    ctx.fillRect(est.x, est.y, est.tamano, est.tamano);
+                }
 
                 contadorFrames++;
                 if (contadorFrames > duracionPaso) {
