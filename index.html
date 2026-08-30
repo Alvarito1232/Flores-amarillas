@@ -8,13 +8,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        /* Pantalla de inicio espacial con estrellas y fugaces */
         #pantalla-inicio {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -96,10 +93,8 @@
         #espacio-animacion {
             display: none;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-color: #000000;
         }
 
@@ -122,7 +117,9 @@
 
     <div id="espacio-animacion">
         <canvas id="canvasSorpresa"></canvas>
-    </div><script>
+    </div>
+
+    <script>
         const contenedorEstrellas = document.getElementById('grupo-estrellas');
         const esCelular = window.innerWidth < 768;
         const numEstrellas = esCelular ? 40 : 70;
@@ -158,16 +155,13 @@
 
         botonInicio.addEventListener('click', function() {
             intentos++;
-
             if (intentos === 1) {
                 grupoInteractivo.style.transform = 'translate(60px, -50px)';
                 textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
-            } 
-            else if (intentos === 2) {
+            } else if (intentos === 2) {
                 grupoInteractivo.style.transform = 'translate(-60px, 60px)';
                 textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
-            } 
-            else if (intentos >= 3) {
+            } else if (intentos >= 3) {
                 pantallaInicio.style.display = 'none';
                 espacioAnimacion.style.display = 'block';
                 iniciarSorpresaTotal();
@@ -178,19 +172,18 @@
             const canvas = document.getElementById('canvasSorpresa');
             const ctx = canvas.getContext('2d');
 
-            function ajustarCanvasAltaResolucion() {
+            function ajustarCanvas() {
                 const dpr = window.devicePixelRatio || 1;
                 canvas.width = window.innerWidth * dpr;
                 canvas.height = window.innerHeight * dpr;
                 ctx.scale(dpr, dpr);
             }
-            ajustarCanvasAltaResolucion();
-            window.addEventListener('resize', ajustarCanvasAltaResolucion);
+            ajustarCanvas();
+            window.addEventListener('resize', ajustarCanvas);
 
-            const estrellasFondoCanvas = [];
-            const cantidadEstrellasCanvas = esCelular ? 45 : 85;
-            for (let i = 0; i < cantidadEstrellasCanvas; i++) {
-                estrellasFondoCanvas.push({
+            const estrellasFondo = [];
+            for (let i = 0; i < (esCelular ? 45 : 85); i++) {
+                estrellasFondo.push({
                     x: Math.random() * window.innerWidth,
                     y: Math.random() * window.innerHeight,
                     tamano: Math.random() * 1.5 + 0.5,
@@ -202,80 +195,56 @@
                 "Te amo",
                 "Mi niña",
                 "Preciosa",
-                ["Gracias", "por", "existir"], 
+                ["Gracias", "por", "existir"],
                 "CORAZON"
             ];
 
             let indicePaso = 0;
-            let particulasTexto = [];
+            let particulas = [];
             let contadorFrames = 0;
-            const duracionPaso = 230; 
+            const duracionPaso = 230;
 
-            class CorazonLluvia {
-                constructor() {
-                    this.reiniciar();
-                }
-
+            class Lluvia {
+                constructor() { this.reiniciar(); }
                 reiniciar() {
                     this.x = Math.random() * window.innerWidth;
                     this.y = -30 - Math.random() * 150;
-                    this.vy = Math.random() * 3.5 + 2.5; 
+                    this.vy = Math.random() * 3.5 + 2.5;
                     this.vx = (Math.random() - 0.5) * 1.5;
                     this.tamano = Math.random() * 6 + 4;
-                    const colores = ['#FF0000', '#FF1744', '#FF4081', '#FFD700', '#FFFFFF', '#00E676'];
-                    this.color = colores[Math.floor(Math.random() * colores.length)];
-                    this.rotacion = Math.random() * Math.PI;
+                    const col = ['#FF0000', '#FF1744', '#FF4081', '#FFD700', '#FFFFFF', '#00E676'];
+                    this.color = col[Math.floor(Math.random() * col.length)];
+                    this.rot = Math.random() * Math.PI;
                     this.vRot = (Math.random() - 0.5) * 0.1;
                 }
-
-                actualizar(esCorazonActivo) {
+                actualizar(activo) {
                     this.y += this.vy;
                     this.x += this.vx;
-                    this.rotacion += this.vRot;
-
-                    let centroX = window.innerWidth / 2;
-                    let centroY = window.innerHeight / 2;
-                    let colisiona = false;
-                    let limiteTextoAncho = esCelular ? 160 : 220;
-
-                    if (esCorazonActivo) {
-                        let dx = this.x - centroX;
-                        let dy = this.y - centroY;
-                        let distancia = Math.sqrt(dx * dx + dy * dy);
-                        if (distancia < (esCelular ? 130 : 180)) {
-                            colisiona = true;
-                        }
+                    this.rot += this.vRot;
+                    let cx = window.innerWidth / 2;
+                    let cy = window.innerHeight / 2;
+                    let col = false;
+                    if (activo) {
+                        if (Math.hypot(this.x - cx, this.y - cy) < (esCelular ? 130 : 180)) col = true;
                     } else {
-                        if (this.y > centroY - 100 && this.y < centroY + 100 &&
-                            this.x > centroX - limiteTextoAncho && this.x < centroX + limiteTextoAncho) {
-                            colisiona = true;
-                        }
+                        if (this.y > cy - 100 && this.y < cy + 100 && this.x > cx - 180 && this.x < cx + 180) col = true;
                     }
-
-                    if (colisiona) {
-                        if (this.x < centroX) {
-                            this.vx = -4;
-                            this.x -= 5;
-                        } else {
-                            this.vx = 4;
-                            this.x += 5;
-                        }
+                    if (col) {
+                        this.vx = this.x < cx ? -4 : 4;
+                        this.x += this.vx * 2;
                         this.y -= 2;
                     }
-
                     if (this.y > window.innerHeight + 30 || this.x < -50 || this.x > window.innerWidth + 50) {
                         this.reiniciar();
                     }
                 }
-
                 dibujar() {
                     ctx.save();
                     ctx.translate(this.x, this.y);
-                    ctx.rotate(this.rotacion);
+                    ctx.rotate(this.rot);
                     ctx.fillStyle = this.color;
                     ctx.shadowBlur = 8;
                     ctx.shadowColor = this.color;
-
                     ctx.beginPath();
                     let t = this.tamano;
                     ctx.moveTo(0, t / 4);
@@ -286,25 +255,21 @@
                 }
             }
 
-            class ParticulaTexto {
+            class Particula {
                 constructor() {
                     this.x = Math.random() * window.innerWidth;
                     this.y = Math.random() * window.innerHeight;
-                    this.destinoX = this.x;
-                    this.destinoY = this.y;
-                    const tonalidadesRojasPuras = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
-                    this.color = tonalidadesRojasPuras[Math.floor(Math.random() * tonalidadesRojasPuras.length)];
-                    this.tamano = esCelular ? (Math.random() * 1.5 + 1.1) : (Math.random() * 2.0 + 1.3);
-                    this.velocidad = 0.14; 
+                    this.destX = this.x;
+                    this.destY = this.y;
+                    const rojos = ['#FF0000', '#FF1111', '#E60000', '#FF2222', '#CC0000'];
+                    this.color = rojos[Math.floor(Math.random() * rojos.length)];
+                    this.tamano = esCelular ? (Math.random() * 1.6 + 1.1) : (Math.random() * 2.1 + 1.3);
+                    this.vel = 0.14;
                 }
-
                 actualizar() {
-                    let dx = this.destinoX - this.x;
-                    let dy = this.destinoY - this.y;
-                    this.x += dx * this.velocidad;
-                    this.y += dy * this.velocidad;
+                    this.x += (this.destX - this.x) * this.vel;
+                    this.y += (this.destY - this.y) * this.vel;
                 }
-
                 dibujar() {
                     ctx.fillStyle = this.color;
                     ctx.shadowBlur = 8;
@@ -315,42 +280,114 @@
                 }
             }
 
-            function obtenerPuntosTexto(itemSecuencia) {
-                const offScreenCanvas = document.createElement('canvas');
-                const offCtx = offScreenCanvas.getContext('2d');
+            function obtenerPuntos(item) {
+                const offC = document.createElement('canvas');
+                const offCtx = offC.getContext('2d');
                 const w = window.innerWidth;
                 const h = window.innerHeight;
-                offScreenCanvas.width = w;
-                offScreenCanvas.height = h;
-
+                offC.width = w; offC.height = h;
                 offCtx.fillStyle = '#ffffff';
 
-                if (Array.isArray(itemSecuencia)) {
-                    let fontSize = esCelular ? Math.min(w / 5.2, 44) : Math.min(w / 6.0, 64);
-                    offCtx.font = `bold ${fontSize}px sans-serif`;
+                if (Array.isArray(item)) {
+                    let fSize = esCelular ? Math.min(w / 5.2, 42) : Math.min(w / 6.0, 64);
+                    offCtx.font = `bold ${fSize}px sans-serif`;
                     offCtx.textAlign = 'center';
                     offCtx.textBaseline = 'middle';
-
-                    let lineHeight = fontSize * 1.3;
-                    let totalHeight = lineHeight * itemSecuencia.length;
-                    let startY = (h / 2) - (totalHeight / 2) + (lineHeight / 2);
-
-                    itemSecuencia.forEach((linea, index) => {
-                        offCtx.fillText(linea, w / 2, startY + (index * lineHeight));
+                    let lHeight = fSize * 1.3;
+                    let tHeight = lHeight * item.length;
+                    let startY = (h / 2) - (tHeight / 2) + (lHeight / 2);
+                    item.forEach((lin, idx) => {
+                        offCtx.fillText(lin, w / 2, startY + (idx * lHeight));
                     });
                 } else {
-                    let fontSize = esCelular ? (itemSecuencia.length > 8 ? Math.min(w / 4.6, 52) : Math.min(w / 3.8, 68)) : Math.min(w / 4.5, 95);
-                    offCtx.font = `bold ${fontSize}px sans-serif`;
+                    let fSize = esCelular ? (item.length > 8 ? Math.min(w / 4.6, 50) : Math.min(w / 3.8, 66)) : Math.min(w / 4.5, 95);
+                    offCtx.font = `bold ${fSize}px sans-serif`;
                     offCtx.textAlign = 'center';
                     offCtx.textBaseline = 'middle';
-                    offCtx.fillText(itemSecuencia, w / 2, h / 2);
+                    offCtx.fillText(item, w / 2, h / 2);
                 }
 
-                const imgData = offCtx.getImageData(0, 0, w, h);
-                const puntos = [];
-                const salto = esCelular ? 4 : 3; 
-
+                const img = offCtx.getImageData(0, 0, w, h).data;
+                const pts = [];
+                const salto = esCelular ? 4 : 3;
                 for (let y = 0; y < h; y += salto) {
                     for (let x = 0; x < w; x += salto) {
-                        const index = (y * w + x) * 4;
-                        if (imgData.data[index + 3] > 128) {
+                        if (img[(y * w + x) * 4 + 3] > 128) {
+                            pts.push({ x, y });
+                        }
+                    }
+                }
+                return pts;
+            }
+
+            function obtenerCorazon() {
+                const pts = [];
+                const cx = window.innerWidth / 2;
+                const cy = window.innerHeight / 2;
+                let esc = Math.min(window.innerWidth, window.innerHeight) / (esCelular ? 750 : 650);
+                [70, 120, 170, 220].forEach(s => {
+                    let r = s * esc;
+                    for (let t = 0; t < Math.PI * 2; t += 0.06) {
+                        let hx = 16 * Math.pow(Math.sin(t), 3);
+                        let hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                        pts.push({ x: cx + hx * (r / 15), y: cy + hy * (r / 15) });
+                    }
+                });
+                return pts;
+            }
+
+            const numParticulas = esCelular ? 900 : 1600;
+            for (let i = 0; i < numParticulas; i++) particulas.push(new Particula());
+
+            const lluvia = [];
+            for (let i = 0; i < (esCelular ? 65 : 110); i++) lluvia.push(new Lluvia());
+
+            function actualizarDestinos(dispersar) {
+                if (dispersar) {
+                    for (let p of particulas) {
+                        p.destX = Math.random() * window.innerWidth;
+                        p.destY = Math.random() * window.innerHeight;
+                    }
+                } else {
+                    let actual = secuencia[indicePaso];
+                    let objetivos = (actual === "CORAZON") ? obtenerCorazon() : obtenerPuntos(actual);
+                    for (let i = 0; i < particulas.length; i++) {
+                        if (objetivos.length > 0) {
+                            let pt = objetivos[i % objetivos.length];
+                            particulas[i].destX = pt.x + (Math.random() - 0.5) * 2;
+                            particulas[i].destY = pt.y + (Math.random() - 0.5) * 2;
+                        }
+                    }
+                }
+            }
+
+            actualizarDestinos(false);
+
+            function loop() {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+                for (let est of estrellasFondo) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${est.alfa})`;
+                    ctx.fillRect(est.x, est.y, est.tamano, est.tamano);
+                }
+
+                contadorFrames++;
+                if (contadorFrames === duracionPaso - 45) actualizarDestinos(true);
+                if (contadorFrames > duracionPaso) {
+                    contadorFrames = 0;
+                    indicePaso = (indicePaso + 1) % secuencia.length;
+                    actualizarDestinos(false);
+                }
+
+                let esCorazon = (secuencia[indicePaso] === "CORAZON");
+                for (let c of lluvia) { c.actualizar(esCorazon); c.dibujar(); }
+                for (let p of particulas) { p.actualizar(); p.dibujar(); }
+
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+    </script>
+</body>
+</html>
