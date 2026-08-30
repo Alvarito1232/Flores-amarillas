@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; height: 100%; overflow: hidden; background: #000000; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        /* Pantalla de inicio (Fondo negro con botón) */
+        /* Pantalla de inicio */
         #pantalla-inicio {
             position: absolute;
             top: 0;
@@ -16,31 +16,42 @@
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
         }
 
+        /* Botón mejorado, brillante y llamativo */
         #boton-inicio {
-            padding: 15px 35px;
-            font-size: 20px;
-            background-color: #FFD700;
+            padding: 18px 40px;
+            font-size: 22px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
             color: #000;
             border: none;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-            transition: transform 0.2s ease;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        #boton-inicio:active {
-            transform: scale(0.95);
+        #boton-inicio:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.9);
         }
 
-        /* Pantalla principal (Fondo negro puro con las flores flotando) */
-        #espacio-flores {
-            display: none; /* Oculto hasta presionar el botón */
+        #texto-intentos {
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* Pantalla principal con lluvia de flores diminutas */
+        #espacio-lluvia {
+            display: none;
             position: absolute;
             top: 0;
             left: 0;
@@ -50,33 +61,24 @@
             overflow: hidden;
         }
 
-        /* Efecto de gravedad cero (Flores flotando suavemente en el fondo negro) */
-        .flor-flotando {
+        /* Estilo para las flores diminutas cayendo */
+        .flor-diminuta {
             position: absolute;
-            width: 35px;
-            height: 35px;
-            background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png'); /* Icono de flor/hoja amarilla */
+            width: 15px; /* Tamaño diminuto */
+            height: 15px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/183/183801.png');
             background-size: contain;
             background-repeat: no-repeat;
-            opacity: 0.85;
-            animation: flotarCeroGravedad linear infinite;
+            opacity: 0.8;
+            animation: caidaLibre linear infinite;
         }
 
-        @keyframes flotarCeroGravedad {
+        @keyframes caidaLibre {
             0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(30px, -40px) rotate(90deg);
-            }
-            50% {
-                transform: translate(-20px, -80px) rotate(180deg);
-            }
-            75% {
-                transform: translate(40px, -120px) rotate(270deg);
+                transform: translateY(-20px) rotate(0deg);
             }
             100% {
-                transform: translate(-10px, -180px) rotate(360deg);
+                transform: translateY(105vh) rotate(360deg);
             }
         }
     </style>
@@ -85,42 +87,56 @@
 
     <!-- Pantalla inicial -->
     <div id="pantalla-inicio">
-        <button id="boton-inicio">Presiona</button>
+        <button id="boton-inicio">Presiona aquí ✨</button>
+        <div id="texto-intentos">Toca para descubrir algo especial</div>
     </div>
 
-    <!-- Pantalla con fondo negro y efecto flotante -->
-    <div id="espacio-flores"></div>
+    <!-- Pantalla con fondo negro y lluvia de flores diminutas -->
+    <div id="espacio-lluvia"></div>
 
     <script>
         const botonInicio = document.getElementById('boton-inicio');
         const pantallaInicio = document.getElementById('pantalla-inicio');
-        const espacioFlores = document.getElementById('espacio-flores');
+        const espacioLluvia = document.getElementById('espacio-lluvia');
+        const textoIntentos = document.getElementById('texto-intentos');
+
+        let intentos = 0; // Contador para los clics falsos
 
         botonInicio.addEventListener('click', function() {
-            // Ocultar inicio y mostrar el espacio negro con las flores
-            pantallaInicio.style.display = 'none';
-            espacioFlores.style.display = 'block';
+            intentos++;
 
-            // Generar las flores flotando en gravedad cero
-            crearEfectoGravedadCero();
+            if (intentos === 1) {
+                // Primer intento: el botón "falla" y se mueve a otro lado
+                botonInicio.style.transform = 'translate(100px, -80px)';
+                textoIntentos.innerText = "¡Uy, casi! Intenta de nuevo 😜";
+            } 
+            else if (intentos === 2) {
+                // Segundo intento: se mueve hacia el otro lado y sigue sin abrir
+                botonInicio.style.transform = 'translate(-120px, 90px)';
+                textoIntentos.innerText = "¡Otra vez fallaste! Jaja 😂";
+            } 
+            else if (intentos >= 3) {
+                // Tercer intento: ¡Ahora sí funciona y entra!
+                pantallaInicio.style.display = 'none';
+                espacioLluvia.style.display = 'block';
+                iniciarLluviaDeFlores();
+            }
         });
 
-        function crearEfectoGravedadCero() {
-            const cantidadFlores = 25; // Número de flores flotando a la vez
-            for (let i = 0; i < cantidadFlores; i++) {
+        function iniciarLluviaDeFlores() {
+            const cantidad = 50; // ¡Bastantes flores diminutas cayendo!
+            for (let i = 0; i < cantidad; i++) {
                 const flor = document.createElement('div');
-                flor.classList.add('flor-flotando');
+                flor.classList.add('flor-diminuta');
 
-                // Posición inicial aleatoria en la pantalla
+                // Posición horizontal aleatoria
                 flor.style.left = Math.random() * 100 + 'vw';
-                flor.style.top = (Math.random() * 50 + 50) + 'vh'; 
-
-                // Velocidad y retraso aleatorios para que se vea natural
-                const duracion = Math.random() * 6 + 4; // Entre 4 y 10 segundos
-                flor.style.animationDuration = duracion + 's';
+                
+                // Retraso y velocidad de caída variados para que se vea natural
+                flor.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Entre 2 y 5 segundos (rápido y fluido)
                 flor.style.animationDelay = (Math.random() * 5) + 's';
 
-                espacioFlores.appendChild(flor);
+                espacioLluvia.appendChild(flor);
             }
         }
     </script>
